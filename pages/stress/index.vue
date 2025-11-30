@@ -1,0 +1,192 @@
+<template>
+  <div class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 py-8">
+
+    <!-- 🟩 Окошко с номерами вопросов -->
+    <div
+      class="absolute top-4 right-4 bg-white shadow-xl rounded-xl p-4 w-72 grid grid-cols-5 gap-3 border border-purple-300"
+    >
+      <button
+        v-for="(q, i) in questions"
+        :key="i"
+        @click="jumpTo(i)"
+        class="w-10 h-10 flex items-center justify-center rounded-md text-base font-bold transition"
+        :class="[
+          currentIdx === i
+            ? 'bg-purple-300 text-white'
+            : answered[i]
+              ? 'bg-green-300 text-white'
+              : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+        ]"
+      >
+        {{ i + 1 }}
+      </button>
+    </div>
+
+    <!-- ОСНОВНОЙ БЛОК -->
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-purple-400">
+      <h2 class="text-3xl font-bold text-center mb-2 text-purple-700">Тест: Ударение</h2>
+      <p class="text-center text-gray-500 mb-6">
+        В каком слове буква, обозначающая ударный гласный, выделена верно?
+      </p>
+
+      <div v-if="!finished">
+        <div class="mb-4 text-lg font-semibold text-center text-blue-700">
+          Вопрос {{ currentIdx + 1 }} из {{ questions.length }}
+        </div>
+
+        <div class="flex flex-col gap-3 mb-6">
+          <button
+            v-for="(option, idx) in currentQuestion.options"
+            :key="idx"
+            :class="[
+              'py-3 px-4 rounded-lg border text-lg font-medium transition transform hover:scale-[1.02]',
+              selectedIdx === idx ? 'bg-blue-100 border-blue-400' : 'bg-white border-gray-300',
+              showResult && idx === currentQuestion.correct ? 'bg-green-100 border-green-500 shadow-md' : '',
+              showResult && selectedIdx === idx && selectedIdx !== currentQuestion.correct ? 'bg-red-100 border-red-500 shadow-md' : ''
+            ]"
+            @click="selectOption(idx)"
+            :disabled="showResult"
+          >
+            {{ option }}
+          </button>
+        </div>
+
+        <div v-if="showResult" class="text-center flex justify-between gap-4 mt-3">
+          <button
+            @click="prevQuestion"
+            :disabled="currentIdx === 0"
+            class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition disabled:opacity-50"
+          >
+            ⬅️ Назад
+          </button>
+
+          <button
+            @click="nextQuestion"
+            :disabled="currentIdx >= questions.length - 1"
+            class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50"
+          >
+            Вперёд ➡️
+          </button>
+        </div>
+
+        <div v-if="showResult && selectedIdx === currentQuestion.correct" class="text-green-600 font-semibold mt-2">
+          ✅ Верно!
+        </div>
+        <div v-if="showResult && selectedIdx !== currentQuestion.correct" class="text-red-600 font-semibold mt-2">
+          ❌ Неверно. Правильный ответ: <b>{{ currentQuestion.options[currentQuestion.correct] }}</b>
+        </div>
+
+      </div>
+
+      <div v-else class="text-center mt-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 inline-block">
+          <p class="text-2xl font-bold text-purple-700 mb-2">Тест завершён!</p>
+          <p class="text-lg mb-2">Ваш результат:</p>
+
+          <p class="text-3xl font-extrabold text-green-600 mb-2">
+            {{ correctCount }}/{{ questions.length }} ({{ percent }}%)
+          </p>
+
+          <p class="text-xl font-semibold mb-4">
+            Оценка: <span :class="gradeColor">{{ grade }}</span>
+          </p>
+
+          <NuxtLink to="/" class="block text-blue-600 underline hover:text-blue-800 mt-2">
+            ⬅️ На главную
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+
+const questions = [
+  { options: ['индУстрия', 'кухОнный', 'ходатАйство', 'закУпорить'], correct: 3 },
+  { options: ['Посадить ирИс', 'знамЕние', 'балОванный', 'звОнит'], correct: 2 },
+  { options: ['КвАртал', 'катАлог', 'газирОванный', 'премИровать'], correct: 2 },
+  { options: ['ОблЕгчить', 'дОсуг', 'икОнопись', 'кладовАя'], correct: 3 },
+  { options: ['ХристианИн', 'апОстроф', 'генЕзис', 'танцовщИк'], correct: 0 },
+  { options: ['газИрованный', 'анАтом', 'дОговор', 'зАвидно'], correct: 1 },
+  { options: ['Оптовый', 'наотмАшь', 'мИзерный', 'кулинАрия'], correct: 3 },
+  { options: ['призывнОй', 'призывнЫй', 'досытА', 'агрономИя'], correct: 0 },
+  { options: ['бармЕн', 'гастронОмия', 'издавнА', 'крЕмень'], correct: 1 },
+  { options: ['пОутру', 'мелькОм', 'бородУ', 'бомбардировАть'], correct: 3 },
+  { options: ['дЕспот', 'глАдильный', 'дремотА', 'бАлуясь'], correct: 0 },
+  { options: ['истЕрия', 'зубчАтый', 'олигархИя', 'рАкушка'], correct: 1 },
+  { options: ['обеспечЕние', 'веровАние', 'избрАнник', 'индУстрия'], correct: 2 },
+  { options: ['пАмятуя', 'сАжень', 'сАбо', 'прОстыня'], correct: 0 },
+  { options: ['кладОвая', 'забЕленный', 'рАдушный', 'кружАщий'], correct: 3 },
+];
+
+const currentIdx = ref(0);
+const selectedIdx = ref<number | null>(null);
+const showResult = ref(false);
+const correctCount = ref(0);
+
+// Отмеченные вопросы
+const answered = ref<boolean[]>(Array(questions.length).fill(false));
+
+const currentQuestion = computed(() => questions[currentIdx.value]);
+const finished = computed(() => answered.value.every(a => a));
+const percent = computed(() => Math.round((correctCount.value / questions.length) * 100));
+
+function selectOption(idx: number) {
+  if (showResult.value) return;
+
+  selectedIdx.value = idx;
+  showResult.value = true;
+
+  answered.value[currentIdx.value] = true;
+
+  if (idx === currentQuestion.value.correct) correctCount.value++;
+}
+
+function nextQuestion() {
+  if (currentIdx.value < questions.length - 1) currentIdx.value++;
+  selectedIdx.value = null;
+  showResult.value = answered.value[currentIdx.value]; // если уже отвечен, показываем результат
+}
+
+function prevQuestion() {
+  if (currentIdx.value > 0) currentIdx.value--;
+  selectedIdx.value = null;
+  showResult.value = answered.value[currentIdx.value];
+}
+
+function jumpTo(i: number) {
+  currentIdx.value = i;
+  selectedIdx.value = null;
+  showResult.value = answered.value[i];
+}
+
+const grade = computed(() => {
+  if (percent.value < 50) return '2';
+  if (percent.value <= 70) return '3';
+  if (percent.value <= 84) return '4';
+  if (percent.value >= 85) return '5';
+  return '-';
+});
+
+const gradeColor = computed(() => {
+  return grade.value === '5'
+    ? 'text-green-600'
+    : grade.value === '4'
+    ? 'text-blue-600'
+    : grade.value === '3'
+    ? 'text-yellow-600'
+    : 'text-red-600';
+});
+</script>
+
+<style scoped>
+button {
+  transition: all 0.2s ease-in-out;
+}
+button:hover:not(:disabled) {
+  transform: scale(1.02);
+}
+</style>
