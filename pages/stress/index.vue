@@ -24,12 +24,18 @@
 
     <!-- ОСНОВНОЙ БЛОК -->
     <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-purple-400">
-      <h2 class="text-3xl font-bold text-center mb-2 text-purple-700">Тест: Ударение</h2>
+
+      <h2 class="text-3xl font-bold text-center mb-2 text-purple-700">
+        Тест: Ударение
+      </h2>
+
       <p class="text-center text-gray-500 mb-6">
         В каком слове буква, обозначающая ударный гласный, выделена верно?
       </p>
 
+      <!-- ТЕСТ -->
       <div v-if="!finished">
+
         <div class="mb-4 text-lg font-semibold text-center text-blue-700">
           Вопрос {{ currentIdx + 1 }} из {{ questions.length }}
         </div>
@@ -52,6 +58,7 @@
         </div>
 
         <div v-if="showResult" class="text-center flex justify-between gap-4 mt-3">
+
           <button
             @click="prevQuestion"
             :disabled="currentIdx === 0"
@@ -67,42 +74,80 @@
           >
             Вперёд ➡️
           </button>
+
         </div>
 
-        <div v-if="showResult && selectedIdx === currentQuestion.correct" class="text-green-600 font-semibold mt-2">
+        <div
+          v-if="showResult && selectedIdx === currentQuestion.correct"
+          class="text-green-600 font-semibold mt-2"
+        >
           ✅ Верно!
         </div>
-        <div v-if="showResult && selectedIdx !== currentQuestion.correct" class="text-red-600 font-semibold mt-2">
-          ❌ Неверно. Правильный ответ: <b>{{ currentQuestion.options[currentQuestion.correct] }}</b>
+
+        <div
+          v-if="showResult && selectedIdx !== currentQuestion.correct"
+          class="text-red-600 font-semibold mt-2"
+        >
+          ❌ Неверно. Правильный ответ:
+          <b>{{ currentQuestion.options[currentQuestion.correct] }}</b>
         </div>
 
       </div>
 
+      <!-- РЕЗУЛЬТАТ -->
       <div v-else class="text-center mt-6">
+
         <div class="bg-white rounded-xl shadow-lg p-6 inline-block">
-          <p class="text-2xl font-bold text-purple-700 mb-2">Тест завершён!</p>
-          <p class="text-lg mb-2">Ваш результат:</p>
+
+          <p class="text-2xl font-bold text-purple-700 mb-2">
+            Тест завершён!
+          </p>
+
+          <p class="text-lg mb-2">
+            Ваш результат:
+          </p>
 
           <p class="text-3xl font-extrabold text-green-600 mb-2">
             {{ correctCount }}/{{ questions.length }} ({{ percent }}%)
           </p>
 
           <p class="text-xl font-semibold mb-4">
-            Оценка: <span :class="gradeColor">{{ grade }}</span>
+            Оценка:
+            <span :class="gradeColor">{{ grade }}</span>
           </p>
 
-          <NuxtLink to="/" class="block text-blue-600 underline hover:text-blue-800 mt-2">
+          <p v-if="saveStatus === 'saving'" class="text-blue-600">
+            Сохраняем результат...
+          </p>
+
+          <p v-if="saveStatus === 'saved'" class="text-green-600 font-semibold">
+            ✅ Результат сохранён
+          </p>
+
+          <p v-if="saveStatus === 'error'" class="text-red-600 font-semibold">
+            ❌ Не удалось сохранить результат
+          </p>
+
+          <NuxtLink
+            to="/"
+            class="block text-blue-600 underline hover:text-blue-800 mt-4"
+          >
             ⬅️ На главную
           </NuxtLink>
+
         </div>
+
       </div>
+
     </div>
 
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue'
+
+const supabase = useSupabaseClient()
 
 const questions = [
   { options: ['индУстрия', 'кухОнный', 'ходатАйство', 'закУпорить'], correct: 3 },
@@ -120,72 +165,163 @@ const questions = [
   { options: ['обеспечЕние', 'веровАние', 'избрАнник', 'индУстрия'], correct: 2 },
   { options: ['пАмятуя', 'сАжень', 'сАбо', 'прОстыня'], correct: 0 },
   { options: ['кладОвая', 'забЕленный', 'рАдушный', 'кружАщий'], correct: 3 },
-];
+]
 
-const currentIdx = ref(0);
-const selectedIdx = ref<number | null>(null);
-const showResult = ref(false);
-const correctCount = ref(0);
+const currentIdx = ref(0)
+const selectedIdx = ref<number | null>(null)
+const showResult = ref(false)
+const correctCount = ref(0)
 
-// Отмеченные вопросы
-const answered = ref<boolean[]>(Array(questions.length).fill(false));
+const answered = ref<boolean[]>(Array(questions.length).fill(false))
 
-const currentQuestion = computed(() => questions[currentIdx.value]);
-const finished = computed(() => answered.value.every(a => a));
-const percent = computed(() => Math.round((correctCount.value / questions.length) * 100));
+const studentName = ref('')
+const studentClass = ref('')
+const startedAt = ref('')
+const attemptId = ref<string | null>(null)
 
-function selectOption(idx: number) {
-  if (showResult.value) return;
+const saveStatus = ref<'saving' | 'saved' | 'error' | null>(null)
 
-  selectedIdx.value = idx;
-  showResult.value = true;
+const currentQuestion = computed(() => questions[currentIdx.value])
 
-  answered.value[currentIdx.value] = true;
+const finished = computed(() =>
+  answered.value.every(a => a)
+)
 
-  if (idx === currentQuestion.value.correct) correctCount.value++;
-}
-
-function nextQuestion() {
-  if (currentIdx.value < questions.length - 1) currentIdx.value++;
-  selectedIdx.value = null;
-  showResult.value = answered.value[currentIdx.value]; // если уже отвечен, показываем результат
-}
-
-function prevQuestion() {
-  if (currentIdx.value > 0) currentIdx.value--;
-  selectedIdx.value = null;
-  showResult.value = answered.value[currentIdx.value];
-}
-
-function jumpTo(i: number) {
-  currentIdx.value = i;
-  selectedIdx.value = null;
-  showResult.value = answered.value[i];
-}
+const percent = computed(() =>
+  Math.round((correctCount.value / questions.length) * 100)
+)
 
 const grade = computed(() => {
-  if (percent.value < 50) return '2';
-  if (percent.value <= 70) return '3';
-  if (percent.value <= 84) return '4';
-  if (percent.value >= 85) return '5';
-  return '-';
-});
+  if (percent.value < 50) return '2'
+  if (percent.value <= 70) return '3'
+  if (percent.value <= 84) return '4'
+  return '5'
+})
 
 const gradeColor = computed(() => {
   return grade.value === '5'
     ? 'text-green-600'
     : grade.value === '4'
-    ? 'text-blue-600'
-    : grade.value === '3'
-    ? 'text-yellow-600'
-    : 'text-red-600';
-});
+      ? 'text-blue-600'
+      : grade.value === '3'
+        ? 'text-yellow-600'
+        : 'text-red-600'
+})
+
+onMounted(async () => {
+  const savedStudent = localStorage.getItem('orphoepia_student')
+
+  if (!savedStudent) {
+    await navigateTo('/')
+    return
+  }
+
+  try {
+    const student = JSON.parse(savedStudent)
+
+    studentName.value = student.name
+    studentClass.value = student.class
+  } catch {
+    await navigateTo('/')
+    return
+  }
+
+  startedAt.value = new Date().toISOString()
+
+  const { data, error } = await supabase
+    .from('attempts')
+    .insert({
+      student_name: studentName.value,
+      class: studentClass.value,
+      total_questions: questions.length,
+      started_at: startedAt.value
+    })
+    .select('id')
+    .single()
+
+  if (error) {
+    console.error('Ошибка создания попытки:', error)
+    return
+  }
+
+  attemptId.value = data.id
+})
+
+function selectOption(idx: number) {
+  if (showResult.value) return
+
+  selectedIdx.value = idx
+  showResult.value = true
+
+  answered.value[currentIdx.value] = true
+
+  if (idx === currentQuestion.value.correct) {
+    correctCount.value++
+  }
+
+  if (finished.value) {
+    saveResult()
+  }
+}
+
+async function saveResult() {
+  if (!attemptId.value) {
+    saveStatus.value = 'error'
+    return
+  }
+
+  saveStatus.value = 'saving'
+
+  const completedAt = new Date().toISOString()
+
+  const { error } = await supabase
+    .from('attempts')
+    .update({
+      score: correctCount.value,
+      percentage: percent.value,
+      completed_at: completedAt
+    })
+    .eq('id', attemptId.value)
+
+  if (error) {
+    console.error('Ошибка сохранения результата:', error)
+    saveStatus.value = 'error'
+    return
+  }
+
+  saveStatus.value = 'saved'
+}
+
+function nextQuestion() {
+  if (currentIdx.value < questions.length - 1) {
+    currentIdx.value++
+  }
+
+  selectedIdx.value = null
+  showResult.value = answered.value[currentIdx.value]
+}
+
+function prevQuestion() {
+  if (currentIdx.value > 0) {
+    currentIdx.value--
+  }
+
+  selectedIdx.value = null
+  showResult.value = answered.value[currentIdx.value]
+}
+
+function jumpTo(i: number) {
+  currentIdx.value = i
+  selectedIdx.value = null
+  showResult.value = answered.value[i]
+}
 </script>
 
 <style scoped>
 button {
   transition: all 0.2s ease-in-out;
 }
+
 button:hover:not(:disabled) {
   transform: scale(1.02);
 }
