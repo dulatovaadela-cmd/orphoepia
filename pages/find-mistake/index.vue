@@ -8,13 +8,14 @@
 
     <div
       v-if="!finished"
-      class="relative mx-auto max-w-[1400px]"
+      class="relative mx-auto w-full max-w-[1400px]"
     >
       <!-- ======================================================= -->
       <!-- ЗАДАНИЕ -->
       <!-- ======================================================= -->
 
       <div class="mx-auto max-w-5xl">
+
         <!-- Заголовок -->
         <div
           class="mb-5 rounded-[28px] border-2 border-purple-200 bg-white/95 p-5 shadow-xl sm:p-7"
@@ -78,9 +79,7 @@
           />
 
           <!-- Номер -->
-          <div
-            class="relative z-10 mb-6 flex justify-center"
-          >
+          <div class="relative z-10 mb-6 flex justify-center">
             <div
               class="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-5 py-2 text-sm font-extrabold text-white shadow-lg"
             >
@@ -108,35 +107,47 @@
             </p>
           </div>
 
-          <!-- Поле ответа + лапка -->
-          <div
-            class="relative z-10 mx-auto max-w-2xl"
-          >
+          <!-- ================================================= -->
+          <!-- ПОЛЕ ОТВЕТА + ЛАПКА -->
+          <!-- ================================================= -->
+
+          <div class="relative z-10 mx-auto max-w-2xl">
+
             <label
               class="mb-3 block text-center text-base font-extrabold text-purple-700 sm:text-lg"
             >
               ✏️ Твой ответ
             </label>
 
-            <div
-              class="relative flex items-center gap-2"
-            >
-              <!-- Поле -->
+            <div class="relative flex items-center gap-2">
+
+              <!-- ПОЛЕ ОТВЕТА -->
               <input
                 v-model="userAnswer"
                 type="text"
                 autocomplete="off"
                 :disabled="showResult"
                 placeholder="Напиши правильное ударение..."
-                class="h-14 min-w-0 flex-1 rounded-2xl border-3 border-purple-200 bg-white px-5 text-center text-lg font-bold text-gray-800 shadow-lg outline-none transition-all placeholder:text-sm placeholder:font-medium placeholder:text-gray-400 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 disabled:bg-gray-50 sm:text-xl"
+                :class="[
+                  'h-14 min-w-0 flex-1 rounded-2xl border-3 px-5 text-center text-lg font-bold shadow-lg outline-none transition-all duration-300 placeholder:text-sm placeholder:font-medium sm:text-xl',
+
+                  showResult && isCorrect
+                    ? 'border-green-500 bg-green-100 text-green-700 shadow-[0_0_20px_rgba(34,197,94,0.35)]'
+                    : showResult && !isCorrect
+                      ? 'border-red-300 bg-red-50 text-red-600'
+                      : 'border-purple-200 bg-white text-gray-800 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 disabled:bg-gray-50'
+                ]"
                 @keyup.enter="checkAnswer"
               />
 
-              <!-- ЛАПКА -->
+              <!-- ================================================= -->
+              <!-- АКТИВНАЯ ЛЕОПАРДОВАЯ ЛАПКА -->
+              <!-- ================================================= -->
+
               <transition name="paw-attack">
                 <div
                   v-if="showPaw"
-                  class="paw-wrapper pointer-events-none absolute -right-4 top-1/2 z-30 -translate-y-1/2 sm:-right-8"
+                  class="paw-wrapper pointer-events-none absolute -right-5 top-1/2 z-30 -translate-y-1/2 sm:-right-9"
                 >
                   <svg
                     class="paw-svg"
@@ -144,113 +155,193 @@
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <defs>
+
+                      <!-- Мех -->
                       <radialGradient
                         id="pawFur"
                         cx="35%"
-                        cy="25%"
-                        r="80%"
+                        cy="20%"
+                        r="85%"
                       >
                         <stop
                           offset="0%"
-                          stop-color="#f6c66a"
+                          stop-color="#ffe29a"
+                        />
+                        <stop
+                          offset="25%"
+                          stop-color="#f4c15e"
+                        />
+                        <stop
+                          offset="55%"
+                          stop-color="#d99836"
+                        />
+                        <stop
+                          offset="80%"
+                          stop-color="#b86f24"
+                        />
+                        <stop
+                          offset="100%"
+                          stop-color="#754116"
+                        />
+                      </radialGradient>
+
+                      <!-- Розовые подушечки -->
+                      <radialGradient
+                        id="pawPad"
+                        cx="30%"
+                        cy="20%"
+                        r="85%"
+                      >
+                        <stop
+                          offset="0%"
+                          stop-color="#ffcfda"
                         />
                         <stop
                           offset="45%"
-                          stop-color="#d89a3d"
+                          stop-color="#f58ba3"
                         />
                         <stop
                           offset="100%"
-                          stop-color="#9a5d20"
+                          stop-color="#d94f73"
                         />
                       </radialGradient>
 
-                      <radialGradient
-                        id="pawPad"
-                        cx="35%"
-                        cy="25%"
-                        r="80%"
-                      >
-                        <stop
-                          offset="0%"
-                          stop-color="#ffb6c9"
-                        />
-                        <stop
-                          offset="100%"
-                          stop-color="#e85d7f"
-                        />
-                      </radialGradient>
-
+                      <!-- Тень -->
                       <filter
                         id="pawShadow"
-                        x="-50%"
-                        y="-50%"
-                        width="200%"
-                        height="200%"
+                        x="-60%"
+                        y="-60%"
+                        width="220%"
+                        height="220%"
                       >
                         <feDropShadow
                           dx="0"
-                          dy="5"
+                          dy="7"
                           stdDeviation="4"
-                          flood-opacity=".35"
+                          flood-opacity=".38"
                         />
                       </filter>
+
+                      <!-- Свечение -->
+                      <filter
+                        id="pawGlow"
+                        x="-80%"
+                        y="-80%"
+                        width="260%"
+                        height="260%"
+                      >
+                        <feGaussianBlur
+                          stdDeviation="3"
+                          result="blur"
+                        />
+                        <feMerge>
+                          <feMergeNode in="blur" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+
                     </defs>
 
-                    <!-- Внешнее свечение -->
+                    <!-- Сильное золотое свечение -->
                     <circle
                       cx="60"
                       cy="60"
                       r="48"
-                      fill="rgba(255,210,80,.22)"
+                      fill="rgba(255,205,65,.18)"
+                      filter="url(#pawGlow)"
                     />
 
-                    <!-- Большая подушечка -->
+                    <!-- Большая мохнатая подушечка -->
                     <ellipse
                       cx="60"
                       cy="72"
-                      rx="31"
-                      ry="27"
+                      rx="32"
+                      ry="28"
                       fill="url(#pawFur)"
-                      stroke="#713c17"
-                      stroke-width="2"
+                      stroke="#663512"
+                      stroke-width="2.5"
                       filter="url(#pawShadow)"
+                    />
+
+                    <!-- Дополнительные маленькие "волоски" меха -->
+                    <path
+                      d="M31 70
+                         Q35 58 42 53
+                         Q47 48 52 50
+                         Q60 44 68 50
+                         Q76 47 82 54
+                         Q91 57 92 70
+                         Q95 78 87 84
+                         Q82 94 71 94
+                         Q60 99 49 94
+                         Q38 96 33 86
+                         Q25 80 31 70Z"
+                      fill="none"
+                      stroke="#f5ca73"
+                      stroke-width="2"
+                      opacity=".7"
                     />
 
                     <!-- Леопардовые пятна -->
                     <ellipse
-                      cx="44"
+                      cx="43"
                       cy="65"
                       rx="5"
                       ry="7"
-                      fill="#4a2813"
-                      transform="rotate(-25 44 65)"
+                      fill="#472612"
+                      transform="rotate(-25 43 65)"
                     />
+
                     <ellipse
-                      cx="76"
+                      cx="77"
                       cy="62"
                       rx="5"
                       ry="8"
-                      fill="#4a2813"
-                      transform="rotate(25 76 62)"
+                      fill="#472612"
+                      transform="rotate(25 77 62)"
                     />
+
                     <ellipse
-                      cx="52"
+                      cx="51"
                       cy="86"
                       rx="4"
                       ry="5"
-                      fill="#4a2813"
-                      transform="rotate(20 52 86)"
+                      fill="#472612"
+                      transform="rotate(20 51 86)"
                     />
+
                     <ellipse
                       cx="70"
                       cy="87"
                       rx="4"
                       ry="5"
-                      fill="#4a2813"
+                      fill="#472612"
                       transform="rotate(-20 70 87)"
                     />
 
-                    <!-- Подушечка -->
+                    <!-- Маленькие пятна -->
+                    <circle
+                      cx="35"
+                      cy="78"
+                      r="2.5"
+                      fill="#542d15"
+                    />
+
+                    <circle
+                      cx="84"
+                      cy="77"
+                      r="2.5"
+                      fill="#542d15"
+                    />
+
+                    <circle
+                      cx="58"
+                      cy="91"
+                      r="2"
+                      fill="#542d15"
+                    />
+
+                    <!-- Центральная подушечка -->
                     <ellipse
                       cx="60"
                       cy="72"
@@ -259,58 +350,111 @@
                       fill="url(#pawPad)"
                     />
 
-                    <!-- Пальчики -->
+                    <!-- Блик -->
+                    <ellipse
+                      cx="53"
+                      cy="67"
+                      rx="6"
+                      ry="3.5"
+                      fill="rgba(255,255,255,.5)"
+                    />
+
+                    <!-- ПАЛЬЧИКИ -->
+
                     <ellipse
                       cx="28"
                       cy="45"
                       rx="11"
-                      ry="16"
+                      ry="17"
                       fill="url(#pawFur)"
-                      stroke="#713c17"
+                      stroke="#663512"
                       stroke-width="2"
                       transform="rotate(-35 28 45)"
+                      filter="url(#pawShadow)"
                     />
 
                     <ellipse
                       cx="47"
                       cy="31"
                       rx="11"
-                      ry="17"
+                      ry="18"
                       fill="url(#pawFur)"
-                      stroke="#713c17"
+                      stroke="#663512"
                       stroke-width="2"
                       transform="rotate(-12 47 31)"
+                      filter="url(#pawShadow)"
                     />
 
                     <ellipse
                       cx="69"
                       cy="31"
                       rx="11"
-                      ry="17"
+                      ry="18"
                       fill="url(#pawFur)"
-                      stroke="#713c17"
+                      stroke="#663512"
                       stroke-width="2"
                       transform="rotate(12 69 31)"
+                      filter="url(#pawShadow)"
                     />
 
                     <ellipse
                       cx="91"
                       cy="45"
                       rx="11"
-                      ry="16"
+                      ry="17"
                       fill="url(#pawFur)"
-                      stroke="#713c17"
+                      stroke="#663512"
                       stroke-width="2"
                       transform="rotate(35 91 45)"
+                      filter="url(#pawShadow)"
+                    />
+
+                    <!-- Пятна на пальчиках -->
+
+                    <ellipse
+                      cx="28"
+                      cy="40"
+                      rx="3.5"
+                      ry="5"
+                      fill="#472612"
+                      transform="rotate(-20 28 40)"
+                    />
+
+                    <ellipse
+                      cx="47"
+                      cy="26"
+                      rx="3.5"
+                      ry="5"
+                      fill="#472612"
+                      transform="rotate(-10 47 26)"
+                    />
+
+                    <ellipse
+                      cx="69"
+                      cy="26"
+                      rx="3.5"
+                      ry="5"
+                      fill="#472612"
+                      transform="rotate(10 69 26)"
+                    />
+
+                    <ellipse
+                      cx="91"
+                      cy="40"
+                      rx="3.5"
+                      ry="5"
+                      fill="#472612"
+                      transform="rotate(20 91 40)"
                     />
 
                     <!-- Розовые подушечки пальцев -->
+
                     <ellipse
                       cx="28"
                       cy="47"
                       rx="6"
                       ry="8"
-                      fill="#ed7190"
+                      fill="url(#pawPad)"
                     />
 
                     <ellipse
@@ -318,7 +462,7 @@
                       cy="33"
                       rx="6"
                       ry="8"
-                      fill="#ed7190"
+                      fill="url(#pawPad)"
                     />
 
                     <ellipse
@@ -326,7 +470,7 @@
                       cy="33"
                       rx="6"
                       ry="8"
-                      fill="#ed7190"
+                      fill="url(#pawPad)"
                     />
 
                     <ellipse
@@ -334,45 +478,103 @@
                       cy="47"
                       rx="6"
                       ry="8"
-                      fill="#ed7190"
+                      fill="url(#pawPad)"
                     />
 
-                    <!-- Блики -->
+                    <!-- Блики на подушечках -->
                     <ellipse
-                      cx="52"
-                      cy="65"
-                      rx="5"
-                      ry="3"
+                      cx="26"
+                      cy="44"
+                      rx="2"
+                      ry="2.5"
                       fill="rgba(255,255,255,.45)"
                     />
 
-                    <!-- Искры -->
+                    <ellipse
+                      cx="45"
+                      cy="30"
+                      rx="2"
+                      ry="2.5"
+                      fill="rgba(255,255,255,.45)"
+                    />
+
+                    <ellipse
+                      cx="67"
+                      cy="30"
+                      rx="2"
+                      ry="2.5"
+                      fill="rgba(255,255,255,.45)"
+                    />
+
+                    <ellipse
+                      cx="89"
+                      cy="44"
+                      rx="2"
+                      ry="2.5"
+                      fill="rgba(255,255,255,.45)"
+                    />
+
+                    <!-- ================================================= -->
+                    <!-- ИСКРЫ -->
+                    <!-- ================================================= -->
+
                     <g class="spark spark-1">
                       <path
-                        d="M15 18 L18 27 L27 30 L18 33 L15 42 L12 33 L3 30 L12 27 Z"
+                        d="M15 18
+                           L18 27
+                           L27 30
+                           L18 33
+                           L15 42
+                           L12 33
+                           L3 30
+                           L12 27 Z"
                         fill="#ffd43b"
+                        stroke="#f4a900"
+                        stroke-width="1"
                       />
                     </g>
 
                     <g class="spark spark-2">
                       <path
-                        d="M105 13 L108 21 L116 24 L108 27 L105 35 L102 27 L94 24 L102 21 Z"
+                        d="M105 13
+                           L108 21
+                           L116 24
+                           L108 27
+                           L105 35
+                           L102 27
+                           L94 24
+                           L102 21 Z"
                         fill="#ffcc33"
+                        stroke="#f4a900"
+                        stroke-width="1"
                       />
                     </g>
 
                     <g class="spark spark-3">
                       <path
-                        d="M102 79 L104 85 L111 87 L104 89 L102 96 L100 89 L93 87 L100 85 Z"
+                        d="M102 79
+                           L104 85
+                           L111 87
+                           L104 89
+                           L102 96
+                           L100 89
+                           L93 87
+                           L100 85 Z"
                         fill="#ffdf55"
+                        stroke="#f4a900"
+                        stroke-width="1"
                       />
                     </g>
+
                   </svg>
                 </div>
               </transition>
             </div>
 
-            <!-- Кнопка -->
+            <!-- ================================================= -->
+            <!-- КНОПКА ПРОВЕРКИ -->
+            <!-- ================================================= -->
+
             <button
               v-if="!showResult"
               type="button"
@@ -392,7 +594,8 @@
               v-if="showResult"
               class="relative z-10 mx-auto mt-7 max-w-2xl"
             >
-              <!-- Правильно -->
+
+              <!-- ПРАВИЛЬНО -->
               <div
                 v-if="isCorrect"
                 class="rounded-[24px] border-4 border-green-400 bg-green-100 p-5 text-center shadow-xl sm:p-6"
@@ -407,14 +610,18 @@
                   Правильно!
                 </p>
 
-                <p
-                  class="mt-2 font-semibold text-green-700"
-                >
+                <p class="mt-2 font-semibold text-green-700">
                   Отлично! Ты правильно нашла ошибку.
                 </p>
+
+                <div
+                  class="mx-auto mt-4 inline-block rounded-xl bg-green-200 px-5 py-2 text-xl font-extrabold text-green-700 shadow-md"
+                >
+                  {{ currentTask.correct }}
+                </div>
               </div>
 
-              <!-- Неправильно -->
+              <!-- НЕПРАВИЛЬНО -->
               <div
                 v-else
                 class="rounded-[24px] border-4 border-red-300 bg-red-50 p-5 text-center shadow-xl sm:p-6"
@@ -429,16 +636,15 @@
                   Попробуй ещё раз!
                 </p>
 
-                <p
-                  class="mt-2 text-gray-700"
-                >
+                <p class="mt-2 text-gray-700">
                   Правильный вариант:
-                  <span
-                    class="font-extrabold text-green-600"
-                  >
-                    {{ currentTask.correct }}
-                  </span>
                 </p>
+
+                <div
+                  class="mx-auto mt-3 inline-block rounded-xl bg-green-100 px-5 py-2 text-xl font-extrabold text-green-600 shadow-md"
+                >
+                  {{ currentTask.correct }}
+                </div>
               </div>
             </div>
           </transition>
@@ -484,9 +690,18 @@
       <!-- ОКНО НУМЕРАЦИИ -->
       <!-- ======================================================= -->
 
+      <!--
+        МОБИЛЬНЫЙ:
+        обычный блок => находится ВНИЗУ после задания.
+
+        НОУТБУК / ПК:
+        lg:absolute => уходит в правый верхний угол.
+      -->
+
       <div
         class="
           mt-6
+          w-full
           rounded-[26px]
           border-2 border-[#d7b98b]
           bg-[#f7ead2]
@@ -507,9 +722,7 @@
           Номера вопросов
         </div>
 
-        <div
-          class="grid grid-cols-5 gap-2"
-        >
+        <div class="grid grid-cols-5 gap-2">
           <button
             v-for="(item, index) in tasks"
             :key="index"
@@ -518,10 +731,10 @@
               'min-h-[45px] rounded-xl border-2 text-sm font-extrabold transition-all duration-200',
 
               currentIdx === index
-                ? 'border-purple-600 bg-purple-500 text-white shadow-lg scale-105'
+                ? 'scale-105 border-purple-600 bg-purple-500 text-white shadow-lg'
                 : answered[index]
                   ? 'border-green-500 bg-green-400 text-white shadow-md'
-                  : 'border-[#d7b98b] bg-[#fff8eb] text-[#795548] hover:bg-white hover:scale-105'
+                  : 'border-[#d7b98b] bg-[#fff8eb] text-[#795548] hover:scale-105 hover:bg-white'
             ]"
             @click="jumpTo(index)"
           >
@@ -578,9 +791,7 @@
           Задание завершено!
         </h2>
 
-        <p
-          class="mt-4 text-lg text-gray-600"
-        >
+        <p class="mt-4 text-lg text-gray-600">
           {{ studentName }}, твой результат:
         </p>
 
@@ -599,10 +810,16 @@
             {{ percent }}%
           </div>
 
-          <div
-            class="mt-4 text-4xl"
-          >
-            {{ grade === 5 ? '🏆' : grade === 4 ? '🌟' : grade === 3 ? '👍' : '💪' }}
+          <div class="mt-4 text-4xl">
+            {{
+              grade === 5
+                ? '🏆'
+                : grade === 4
+                  ? '🌟'
+                  : grade === 3
+                    ? '👍'
+                    : '💪'
+            }}
           </div>
 
           <div
@@ -646,7 +863,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import {
+  ref,
+  computed,
+  onMounted,
+  onBeforeUnmount
+} from 'vue'
 
 interface Task {
   row: string
@@ -739,7 +961,8 @@ const studentClass = ref('')
 const attemptId = ref<string | number | null>(null)
 const startedAt = ref('')
 
-const saveStatus = ref<'saving' | 'saved' | 'error'>('saving')
+const saveStatus =
+  ref<'saving' | 'saved' | 'error'>('saving')
 
 const finished = ref(false)
 
@@ -747,7 +970,9 @@ const showPaw = ref(false)
 
 let pawTimer: ReturnType<typeof setTimeout> | null = null
 
-const currentTask = computed(() => tasks[currentIdx.value]!)
+const currentTask = computed(
+  () => tasks[currentIdx.value]!
+)
 
 const percent = computed(() =>
   Math.round(
@@ -772,11 +997,6 @@ function triggerCorrectPaw() {
   pawTimer = setTimeout(() => {
     showPaw.value = false
     pawTimer = null
-
-    if (currentIdx.value === tasks.length - 1) {
-      finished.value = true
-      saveResult()
-    }
   }, 3000)
 }
 
@@ -814,12 +1034,16 @@ onMounted(async () => {
       await supabase
         .from('attempts')
         .insert({
-          student_name: studentName.value,
-          class: studentClass.value,
+          student_name:
+            studentName.value,
+          class:
+            studentClass.value,
           task_name:
             'Найди ошибку в ударении',
-          total_questions: tasks.length,
-          started_at: startedAt.value
+          total_questions:
+            tasks.length,
+          started_at:
+            startedAt.value
         })
         .select('id')
         .single()
@@ -836,6 +1060,7 @@ onMounted(async () => {
 
     attemptId.value = data.id
     saveStatus.value = 'saving'
+
   } catch (error) {
     console.error(
       'Ошибка чтения данных ученика:',
@@ -861,11 +1086,17 @@ async function saveResult() {
     await supabase
       .from('attempts')
       .update({
-        score: correctCount.value,
-        percentage: percent.value,
-        completed_at: completedAt
+        score:
+          correctCount.value,
+        percentage:
+          percent.value,
+        completed_at:
+          completedAt
       })
-      .eq('id', attemptId.value)
+      .eq(
+        'id',
+        attemptId.value
+      )
 
   if (error) {
     console.error(
@@ -881,8 +1112,13 @@ async function saveResult() {
 }
 
 function checkAnswer() {
-  if (!userAnswer.value.trim()) return
-  if (showResult.value) return
+  if (!userAnswer.value.trim()) {
+    return
+  }
+
+  if (showResult.value) {
+    return
+  }
 
   showResult.value = true
 
@@ -890,9 +1126,11 @@ function checkAnswer() {
     userAnswer.value
       .trim()
       .toLowerCase() ===
-    currentTask.value.correct.toLowerCase()
+    currentTask.value.correct
+      .toLowerCase()
 
-  answered.value[currentIdx.value] = true
+  answered.value[currentIdx.value] =
+    true
 
   if (isCorrect.value) {
     correctCount.value++
@@ -983,66 +1221,107 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
 /* ========================================================= */
-/* ЛАПКА */
+/* ЛАПКА — АКТИВНАЯ, ЯРКАЯ, МЕХОВАЯ */
 /* ========================================================= */
 
 .paw-wrapper {
-  width: 105px;
-  height: 105px;
+  width: 110px;
+  height: 110px;
   transform-origin: center;
 }
 
 .paw-svg {
-  width: 105px;
-  height: 105px;
+  width: 110px;
+  height: 110px;
   overflow: visible;
+
   animation:
-    pawAttack 0.75s cubic-bezier(0.2, 1.4, 0.35, 1)
+    pawAttack 0.72s cubic-bezier(0.18, 1.45, 0.32, 1)
       infinite alternate,
-    pawShake 0.28s ease-in-out infinite alternate;
+    pawShake 0.25s ease-in-out infinite alternate;
+
   filter:
     drop-shadow(0 8px 8px rgba(75, 35, 10, 0.28))
-    drop-shadow(0 0 10px rgba(255, 190, 50, 0.7));
+    drop-shadow(0 0 12px rgba(255, 190, 50, 0.75));
 }
+
+/* ========================================================= */
+/* ЛАПКА БУДТО ОТТЯГИВАЕТ ОТВЕТ */
+/* ========================================================= */
 
 @keyframes pawAttack {
+
   0% {
     transform:
-      translateX(45px)
+      translateX(58px)
       translateY(4px)
-      rotate(14deg)
-      scale(0.82);
+      rotate(16deg)
+      scale(0.78);
   }
 
-  55% {
+  35% {
     transform:
-      translateX(10px)
+      translateX(25px)
       translateY(-2px)
-      rotate(-4deg)
-      scale(1.02);
+      rotate(7deg)
+      scale(0.94);
+  }
+
+  60% {
+    transform:
+      translateX(4px)
+      translateY(-4px)
+      rotate(-5deg)
+      scale(1.05);
+  }
+
+  80% {
+    transform:
+      translateX(-12px)
+      translateY(0)
+      rotate(-12deg)
+      scale(1.12);
   }
 
   100% {
     transform:
-      translateX(-8px)
-      translateY(0)
-      rotate(-12deg)
-      scale(1.08);
+      translateX(-22px)
+      translateY(1px)
+      rotate(-15deg)
+      scale(1.16);
   }
 }
 
+/* ========================================================= */
+/* ЖИВАЯ ДРОЖЬ ЛАПКИ */
+/* ========================================================= */
+
 @keyframes pawShake {
+
   0% {
     filter:
-      drop-shadow(0 8px 8px rgba(75, 35, 10, 0.25))
-      drop-shadow(0 0 8px rgba(255, 190, 50, 0.55));
+      drop-shadow(
+        0 7px 7px
+        rgba(75, 35, 10, 0.25)
+      )
+      drop-shadow(
+        0 0 8px
+        rgba(255, 190, 50, 0.55)
+      );
   }
 
   100% {
     filter:
-      drop-shadow(0 10px 10px rgba(75, 35, 10, 0.32))
-      drop-shadow(0 0 18px rgba(255, 210, 60, 0.95));
+      drop-shadow(
+        0 11px 11px
+        rgba(75, 35, 10, 0.34)
+      )
+      drop-shadow(
+        0 0 20px
+        rgba(255, 215, 65, 1)
+      );
   }
 }
 
@@ -1052,64 +1331,94 @@ onBeforeUnmount(() => {
 
 .spark {
   transform-origin: center;
-  animation: sparkJump 0.55s ease-in-out infinite alternate;
+  animation:
+    sparkJump
+    0.5s
+    ease-in-out
+    infinite
+    alternate;
 }
 
 .spark-2 {
-  animation-delay: 0.15s;
+  animation-delay: 0.14s;
 }
 
 .spark-3 {
-  animation-delay: 0.3s;
+  animation-delay: 0.28s;
 }
 
 @keyframes sparkJump {
+
   0% {
-    opacity: 0.45;
-    transform: scale(0.65) rotate(0deg);
+    opacity: 0.35;
+    transform:
+      scale(0.55)
+      rotate(-5deg);
+  }
+
+  50% {
+    opacity: 0.8;
   }
 
   100% {
     opacity: 1;
-    transform: scale(1.25) rotate(18deg);
+    transform:
+      scale(1.35)
+      rotate(22deg);
   }
 }
 
 /* ========================================================= */
-/* ПОЯВЛЕНИЕ ЛАПКИ */
+/* ВЫЛЕТ ЛАПКИ */
 /* ========================================================= */
 
 .paw-attack-enter-active {
-  animation: pawEnter 0.55s cubic-bezier(0.15, 1.4, 0.3, 1);
+  animation:
+    pawEnter
+    0.55s
+    cubic-bezier(0.12, 1.45, 0.25, 1);
 }
 
 .paw-attack-leave-active {
-  transition: all 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .paw-attack-enter-from,
 .paw-attack-leave-to {
   opacity: 0;
+
   transform:
-    translate(90px, -50%)
-    scale(0.5)
-    rotate(25deg);
+    translate(100px, -50%)
+    scale(0.4)
+    rotate(28deg);
 }
 
 @keyframes pawEnter {
+
   0% {
     opacity: 0;
+
     transform:
-      translate(100px, -50%)
-      rotate(25deg)
-      scale(0.45);
+      translate(110px, -50%)
+      rotate(30deg)
+      scale(0.35);
+  }
+
+  35% {
+    opacity: 1;
+
+    transform:
+      translate(20px, -50%)
+      rotate(8deg)
+      scale(0.9);
   }
 
   55% {
-    opacity: 1;
     transform:
-      translate(-18px, -50%)
-      rotate(-10deg)
+      translate(-15px, -50%)
+      rotate(-12deg)
       scale(1.12);
   }
 
@@ -1117,7 +1426,7 @@ onBeforeUnmount(() => {
     transform:
       translate(8px, -50%)
       rotate(8deg)
-      scale(0.96);
+      scale(0.98);
   }
 
   100% {
@@ -1129,7 +1438,7 @@ onBeforeUnmount(() => {
 }
 
 /* ========================================================= */
-/* РЕЗУЛЬТАТ */
+/* ПОЯВЛЕНИЕ РЕЗУЛЬТАТА */
 /* ========================================================= */
 
 .result-enter-active,
@@ -1142,26 +1451,35 @@ onBeforeUnmount(() => {
 .result-enter-from,
 .result-leave-to {
   opacity: 0;
-  transform: translateY(12px) scale(0.98);
+
+  transform:
+    translateY(12px)
+    scale(0.97);
 }
 
 /* ========================================================= */
-/* МОБИЛЬНЫЙ ЭКРАН */
+/* ТЕЛЕФОН */
 /* ========================================================= */
 
 @media (max-width: 1023px) {
+
   .paw-wrapper {
-    width: 85px;
-    height: 85px;
+    width: 88px;
+    height: 88px;
   }
 
   .paw-svg {
-    width: 85px;
-    height: 85px;
+    width: 88px;
+    height: 88px;
   }
 }
 
+/* ========================================================= */
+/* МАЛЕНЬКИЙ ТЕЛЕФОН */
+/* ========================================================= */
+
 @media (max-width: 640px) {
+
   .paw-wrapper {
     right: -10px;
   }
@@ -1171,4 +1489,5 @@ onBeforeUnmount(() => {
     height: 78px;
   }
 }
+
 </style>
