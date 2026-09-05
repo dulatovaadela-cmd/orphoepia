@@ -1,8 +1,7 @@
+```vue
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 py-10 px-4">
-
     <div class="max-w-6xl mx-auto">
-
       <div class="bg-white rounded-2xl shadow-2xl p-8">
 
         <h1 class="text-3xl font-extrabold text-purple-700 text-center mb-2">
@@ -33,7 +32,7 @@
           class="bg-blue-50 rounded-xl p-6 mb-8 text-center"
         >
           <p class="text-gray-600 mb-1">
-            Общий процент выполнения
+            Средний результат
           </p>
 
           <p
@@ -44,15 +43,23 @@
           </p>
 
           <p class="text-gray-500 mt-2">
-            Попыток пройдено: {{ results.length }}
+            Пройдено заданий: {{ results.length }}
           </p>
         </div>
 
-        <div v-if="loading" class="text-center text-blue-600 text-lg py-10">
+        <!-- Загрузка -->
+        <div
+          v-if="loading"
+          class="text-center text-blue-600 text-lg py-10"
+        >
           Загружаем ваш прогресс...
         </div>
 
-        <div v-else-if="errorMessage" class="text-center py-10">
+        <!-- Ошибка -->
+        <div
+          v-else-if="errorMessage"
+          class="text-center py-10"
+        >
           <p class="text-red-600 font-semibold text-lg">
             {{ errorMessage }}
           </p>
@@ -65,6 +72,7 @@
           </button>
         </div>
 
+        <!-- Нет результатов -->
         <div
           v-else-if="results.length === 0"
           class="text-center text-gray-500 py-10"
@@ -74,15 +82,18 @@
           </p>
 
           <NuxtLink
-            to="/stress"
+            to="/"
             class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-xl"
           >
             🚀 Начать тренировку
           </NuxtLink>
         </div>
 
-        <div v-else class="overflow-x-auto">
-
+        <!-- Таблица результатов -->
+        <div
+          v-else
+          class="overflow-x-auto"
+        >
           <table class="w-full border-collapse">
 
             <thead>
@@ -160,9 +171,9 @@
             </tbody>
 
           </table>
-
         </div>
 
+        <!-- Кнопки -->
         <div class="flex justify-center gap-4 mt-8">
 
           <button
@@ -182,9 +193,7 @@
         </div>
 
       </div>
-
     </div>
-
   </div>
 </template>
 
@@ -201,13 +210,15 @@ const studentName = ref('')
 const studentClass = ref('')
 
 const overallPercentage = computed(() => {
-  if (results.value.length === 0) return 0
-
   const completedResults = results.value.filter(
-    result => result.percentage !== null && result.percentage !== undefined
+    result =>
+      result.percentage !== null &&
+      result.percentage !== undefined
   )
 
-  if (completedResults.length === 0) return 0
+  if (completedResults.length === 0) {
+    return 0
+  }
 
   const total = completedResults.reduce(
     (sum, result) => sum + Number(result.percentage),
@@ -218,19 +229,29 @@ const overallPercentage = computed(() => {
 })
 
 function getStudentInfo() {
-  if (process.client) {
-    const savedStudent = localStorage.getItem('orphoepia_student')
+  if (!process.client) {
+    return
+  }
 
-    if (savedStudent) {
-      try {
-        const student = JSON.parse(savedStudent)
+  const savedStudent = localStorage.getItem('orphoepia_student')
 
-        studentName.value = student.name || ''
-        studentClass.value = student.class || ''
-      } catch (error) {
-        console.error('Ошибка чтения данных ученика:', error)
-      }
+  if (!savedStudent) {
+    navigateTo('/')
+    return
+  }
+
+  try {
+    const student = JSON.parse(savedStudent)
+
+    studentName.value = String(student.name || '').trim()
+    studentClass.value = String(student.class || '').trim()
+
+    if (!studentName.value || !studentClass.value) {
+      navigateTo('/')
     }
+  } catch (error) {
+    console.error('Ошибка чтения данных ученика:', error)
+    navigateTo('/')
   }
 }
 
@@ -278,6 +299,7 @@ function getGrade(percentage: number | null) {
   if (value < 50) return '2'
   if (value <= 70) return '3'
   if (value <= 84) return '4'
+
   return '5'
 }
 
@@ -287,6 +309,7 @@ function getGradeColor(percentage: number | null) {
   if (value < 50) return 'text-red-600'
   if (value <= 70) return 'text-yellow-600'
   if (value <= 84) return 'text-blue-600'
+
   return 'text-green-600'
 }
 
@@ -296,11 +319,14 @@ function getPercentColor(percentage: number | null) {
   if (value < 50) return 'text-red-600'
   if (value <= 70) return 'text-yellow-600'
   if (value <= 84) return 'text-blue-600'
+
   return 'text-green-600'
 }
 
 function formatDate(date: string | null) {
-  if (!date) return '—'
+  if (!date) {
+    return '—'
+  }
 
   return new Date(date).toLocaleString('ru-RU', {
     day: '2-digit',
@@ -313,6 +339,10 @@ function formatDate(date: string | null) {
 
 onMounted(async () => {
   getStudentInfo()
-  await loadResults()
+
+  if (studentName.value && studentClass.value) {
+    await loadResults()
+  }
 })
 </script>
+```
