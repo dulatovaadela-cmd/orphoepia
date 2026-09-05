@@ -1,7 +1,7 @@
 <template>
   <div class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 py-8">
 
-    <!-- 🟩 Окошко с номерами вопросов -->
+    <!-- Окошко с номерами вопросов -->
     <div
       class="absolute top-4 right-4 bg-white shadow-xl rounded-xl p-4 w-72 grid grid-cols-5 gap-3 border border-purple-300"
     >
@@ -46,9 +46,17 @@
             :key="idx"
             :class="[
               'py-3 px-4 rounded-lg border text-lg font-medium transition transform hover:scale-[1.02]',
-              selectedIdx === idx ? 'bg-blue-100 border-blue-400' : 'bg-white border-gray-300',
-              showResult && idx === currentQuestion.correct ? 'bg-green-100 border-green-500 shadow-md' : '',
-              showResult && selectedIdx === idx && selectedIdx !== currentQuestion.correct ? 'bg-red-100 border-red-500 shadow-md' : ''
+              selectedIdx === idx
+                ? 'bg-blue-100 border-blue-400'
+                : 'bg-white border-gray-300',
+              showResult && idx === currentQuestion.correct
+                ? 'bg-green-100 border-green-500 shadow-md'
+                : '',
+              showResult &&
+              selectedIdx === idx &&
+              selectedIdx !== currentQuestion.correct
+                ? 'bg-red-100 border-red-500 shadow-md'
+                : ''
             ]"
             @click="selectOption(idx)"
             :disabled="showResult"
@@ -128,12 +136,23 @@
             ❌ Не удалось сохранить результат
           </p>
 
-          <NuxtLink
-            to="/"
-            class="block text-blue-600 underline hover:text-blue-800 mt-4"
-          >
-            ⬅️ На главную
-          </NuxtLink>
+          <div class="flex flex-col gap-3 mt-4">
+
+            <NuxtLink
+              to="/results"
+              class="block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-5 rounded-xl"
+            >
+              📊 Мой прогресс
+            </NuxtLink>
+
+            <NuxtLink
+              to="/"
+              class="block text-blue-600 underline hover:text-blue-800"
+            >
+              ⬅️ На главную
+            </NuxtLink>
+
+          </div>
 
         </div>
 
@@ -233,6 +252,7 @@ onMounted(async () => {
     .insert({
       student_name: studentName.value,
       class: studentClass.value,
+      task_name: 'Ударение',
       total_questions: questions.length,
       started_at: startedAt.value
     })
@@ -241,6 +261,7 @@ onMounted(async () => {
 
   if (error) {
     console.error('Ошибка создания попытки:', error)
+    saveStatus.value = 'error'
     return
   }
 
