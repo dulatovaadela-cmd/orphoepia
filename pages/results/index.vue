@@ -2,17 +2,19 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 py-10 px-4">
     <div class="max-w-6xl mx-auto">
+
       <div class="bg-white rounded-2xl shadow-2xl p-8">
 
+        <!-- ЗАГОЛОВОК -->
         <h1 class="text-3xl font-extrabold text-purple-700 text-center mb-2">
           📊 Мой прогресс
         </h1>
 
         <p class="text-center text-gray-500 mb-8">
-          История прохождения онлайн-тренажёра
+          История всех прохождений онлайн-тренажёра
         </p>
 
-        <!-- Информация об ученике -->
+        <!-- ИНФОРМАЦИЯ ОБ УЧЕНИКЕ -->
         <div
           v-if="studentName"
           class="bg-purple-50 rounded-xl p-5 mb-8 text-center"
@@ -26,28 +28,7 @@
           </p>
         </div>
 
-        <!-- Общий прогресс -->
-        <div
-          v-if="results.length > 0"
-          class="bg-blue-50 rounded-xl p-6 mb-8 text-center"
-        >
-          <p class="text-gray-600 mb-1">
-            Средний результат
-          </p>
-
-          <p
-            class="text-4xl font-extrabold"
-            :class="getPercentColor(overallPercentage)"
-          >
-            {{ overallPercentage }}%
-          </p>
-
-          <p class="text-gray-500 mt-2">
-            Пройдено заданий: {{ results.length }}
-          </p>
-        </div>
-
-        <!-- Загрузка -->
+        <!-- ЗАГРУЗКА -->
         <div
           v-if="loading"
           class="text-center text-blue-600 text-lg py-10"
@@ -55,7 +36,7 @@
           Загружаем ваш прогресс...
         </div>
 
-        <!-- Ошибка -->
+        <!-- ОШИБКА -->
         <div
           v-else-if="errorMessage"
           class="text-center py-10"
@@ -72,9 +53,9 @@
           </button>
         </div>
 
-        <!-- Нет результатов -->
+        <!-- НЕТ РЕЗУЛЬТАТОВ -->
         <div
-          v-else-if="results.length === 0"
+          v-else-if="groupedResults.length === 0"
           class="text-center text-gray-500 py-10"
         >
           <p class="text-lg mb-3">
@@ -89,92 +70,132 @@
           </NuxtLink>
         </div>
 
-        <!-- Таблица результатов -->
+        <!-- ИСТОРИЯ ПО ДНЯМ -->
         <div
           v-else
-          class="overflow-x-auto"
+          class="space-y-8"
         >
-          <table class="w-full border-collapse">
 
-            <thead>
-              <tr class="bg-purple-100">
+          <!-- ОДИН ДЕНЬ -->
+          <div
+            v-for="day in groupedResults"
+            :key="day.dateKey"
+            class="border border-purple-200 rounded-2xl overflow-hidden shadow-md"
+          >
 
-                <th class="border border-purple-200 px-4 py-3 text-left">
-                  №
-                </th>
+            <!-- ЗАГОЛОВОК ДНЯ -->
+            <div class="bg-purple-100 px-5 py-4 border-b border-purple-200">
 
-                <th class="border border-purple-200 px-4 py-3 text-left">
-                  Задание
-                </th>
+              <div class="flex items-center justify-between gap-3 flex-wrap">
 
-                <th class="border border-purple-200 px-4 py-3 text-center">
-                  Результат
-                </th>
+                <h2 class="text-xl font-extrabold text-purple-700">
+                  📅 {{ day.title }}
+                </h2>
 
-                <th class="border border-purple-200 px-4 py-3 text-center">
-                  Процент
-                </th>
+                <span class="text-sm text-purple-600 font-semibold">
+                  {{ day.results.length }}
+                  {{ getAttemptWord(day.results.length) }}
+                </span>
 
-                <th class="border border-purple-200 px-4 py-3 text-center">
-                  Оценка
-                </th>
+              </div>
 
-                <th class="border border-purple-200 px-4 py-3 text-center">
-                  Дата и время
-                </th>
+            </div>
 
-              </tr>
-            </thead>
+            <!-- ТАБЛИЦА ДНЯ -->
+            <div class="overflow-x-auto">
 
-            <tbody>
+              <table class="w-full border-collapse">
 
-              <tr
-                v-for="(result, index) in results"
-                :key="result.id"
-                class="hover:bg-purple-50"
-              >
+                <thead>
+                  <tr class="bg-white">
 
-                <td class="border border-gray-200 px-4 py-3">
-                  {{ index + 1 }}
-                </td>
+                    <th class="border-b border-gray-200 px-4 py-3 text-left">
+                      №
+                    </th>
 
-                <td class="border border-gray-200 px-4 py-3 font-semibold">
-                  {{ result.task_name || 'Ударение' }}
-                </td>
+                    <th class="border-b border-gray-200 px-4 py-3 text-left">
+                      Время
+                    </th>
 
-                <td class="border border-gray-200 px-4 py-3 text-center font-semibold">
-                  {{ result.score ?? 0 }}/{{ result.total_questions }}
-                </td>
+                    <th class="border-b border-gray-200 px-4 py-3 text-left">
+                      Задание
+                    </th>
 
-                <td
-                  class="border border-gray-200 px-4 py-3 text-center font-bold"
-                  :class="getPercentColor(result.percentage)"
-                >
-                  {{ result.percentage ?? 0 }}%
-                </td>
+                    <th class="border-b border-gray-200 px-4 py-3 text-center">
+                      Результат
+                    </th>
 
-                <td class="border border-gray-200 px-4 py-3 text-center">
-                  <span
-                    class="font-bold"
-                    :class="getGradeColor(result.percentage)"
+                    <th class="border-b border-gray-200 px-4 py-3 text-center">
+                      Процент
+                    </th>
+
+                    <th class="border-b border-gray-200 px-4 py-3 text-center">
+                      Оценка
+                    </th>
+
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  <tr
+                    v-for="(result, index) in day.results"
+                    :key="result.id"
+                    class="hover:bg-purple-50"
                   >
-                    {{ getGrade(result.percentage) }}
-                  </span>
-                </td>
 
-                <td class="border border-gray-200 px-4 py-3 text-center whitespace-nowrap">
-                  {{ formatDate(result.completed_at || result.started_at) }}
-                </td>
+                    <!-- НОМЕР ПОПЫТКИ ЗА ДЕНЬ -->
+                    <td class="border-b border-gray-200 px-4 py-4 font-semibold">
+                      {{ index + 1 }}
+                    </td>
 
-              </tr>
+                    <!-- ВРЕМЯ -->
+                    <td class="border-b border-gray-200 px-4 py-4 whitespace-nowrap">
+                      {{ formatTime(result.completed_at || result.started_at) }}
+                    </td>
 
-            </tbody>
+                    <!-- ЗАДАНИЕ -->
+                    <td class="border-b border-gray-200 px-4 py-4 font-semibold">
+                      {{ result.task_name || 'Ударение' }}
+                    </td>
 
-          </table>
+                    <!-- РЕЗУЛЬТАТ -->
+                    <td class="border-b border-gray-200 px-4 py-4 text-center font-semibold">
+                      {{ result.score ?? 0 }}/{{ result.total_questions }}
+                    </td>
+
+                    <!-- ПРОЦЕНТ -->
+                    <td
+                      class="border-b border-gray-200 px-4 py-4 text-center font-bold text-lg"
+                      :class="getPercentColor(result.percentage)"
+                    >
+                      {{ result.percentage ?? 0 }}%
+                    </td>
+
+                    <!-- ОЦЕНКА -->
+                    <td class="border-b border-gray-200 px-4 py-4 text-center">
+                      <span
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg"
+                        :class="getGradeBackground(result.percentage)"
+                      >
+                        {{ getGrade(result.percentage) }}
+                      </span>
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
         </div>
 
-        <!-- Кнопки -->
-        <div class="flex justify-center gap-4 mt-8">
+        <!-- КНОПКИ -->
+        <div class="flex justify-center gap-4 mt-8 flex-wrap">
 
           <button
             @click="loadResults"
@@ -193,6 +214,7 @@
         </div>
 
       </div>
+
     </div>
   </div>
 </template>
@@ -209,24 +231,55 @@ const errorMessage = ref('')
 const studentName = ref('')
 const studentClass = ref('')
 
-const overallPercentage = computed(() => {
-  const completedResults = results.value.filter(
-    result =>
-      result.percentage !== null &&
-      result.percentage !== undefined
-  )
+/*
+|--------------------------------------------------------------------------
+| ГРУППИРОВКА ПО ДНЯМ
+|--------------------------------------------------------------------------
+*/
 
-  if (completedResults.length === 0) {
-    return 0
+const groupedResults = computed(() => {
+  const groups: Record<
+    string,
+    {
+      dateKey: string
+      title: string
+      results: any[]
+    }
+  > = {}
+
+  for (const result of results.value) {
+    const date = new Date(
+      result.completed_at || result.started_at
+    )
+
+    if (Number.isNaN(date.getTime())) {
+      continue
+    }
+
+    const dateKey =
+      `${date.getFullYear()}-` +
+      `${String(date.getMonth() + 1).padStart(2, '0')}-` +
+      `${String(date.getDate()).padStart(2, '0')}`
+
+    if (!groups[dateKey]) {
+      groups[dateKey] = {
+        dateKey,
+        title: formatDay(date),
+        results: []
+      }
+    }
+
+    groups[dateKey].results.push(result)
   }
 
-  const total = completedResults.reduce(
-    (sum, result) => sum + Number(result.percentage),
-    0
-  )
-
-  return Math.round(total / completedResults.length)
+  return Object.values(groups)
 })
+
+/*
+|--------------------------------------------------------------------------
+| ИНФОРМАЦИЯ ОБ УЧЕНИКЕ
+|--------------------------------------------------------------------------
+*/
 
 function getStudentInfo() {
   if (!process.client) {
@@ -249,11 +302,18 @@ function getStudentInfo() {
     if (!studentName.value || !studentClass.value) {
       navigateTo('/')
     }
+
   } catch (error) {
     console.error('Ошибка чтения данных ученика:', error)
     navigateTo('/')
   }
 }
+
+/*
+|--------------------------------------------------------------------------
+| ЗАГРУЗКА РЕЗУЛЬТАТОВ
+|--------------------------------------------------------------------------
+*/
 
 async function loadResults() {
   loading.value = true
@@ -280,21 +340,91 @@ async function loadResults() {
     `)
     .eq('student_name', studentName.value)
     .eq('class', studentClass.value)
+    .not('completed_at', 'is', null)
     .order('started_at', { ascending: false })
 
   if (error) {
     console.error('Ошибка загрузки прогресса:', error)
-    errorMessage.value = 'Не удалось загрузить ваш прогресс.'
+
+    errorMessage.value =
+      'Не удалось загрузить ваш прогресс.'
+
     loading.value = false
     return
   }
 
   results.value = data || []
+
   loading.value = false
 }
 
+/*
+|--------------------------------------------------------------------------
+| ДАТА
+|--------------------------------------------------------------------------
+*/
+
+function formatDay(date: Date) {
+  return date.toLocaleDateString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+}
+
+/*
+|--------------------------------------------------------------------------
+| ВРЕМЯ
+|--------------------------------------------------------------------------
+*/
+
+function formatTime(dateString: string | null) {
+  if (!dateString) {
+    return '—'
+  }
+
+  const date = new Date(dateString)
+
+  if (Number.isNaN(date.getTime())) {
+    return '—'
+  }
+
+  return date.toLocaleTimeString('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+/*
+|--------------------------------------------------------------------------
+| СКЛОНЕНИЕ "ПОПЫТКА"
+|--------------------------------------------------------------------------
+*/
+
+function getAttemptWord(count: number) {
+  if (count % 10 === 1 && count % 100 !== 11) {
+    return 'попытка'
+  }
+
+  if (
+    count % 10 >= 2 &&
+    count % 10 <= 4 &&
+    (count % 100 < 10 || count % 100 >= 20)
+  ) {
+    return 'попытки'
+  }
+
+  return 'попыток'
+}
+
+/*
+|--------------------------------------------------------------------------
+| ОЦЕНКА
+|--------------------------------------------------------------------------
+*/
+
 function getGrade(percentage: number | null) {
-  const value = percentage ?? 0
+  const value = Number(percentage ?? 0)
 
   if (value < 50) return '2'
   if (value <= 70) return '3'
@@ -303,18 +433,14 @@ function getGrade(percentage: number | null) {
   return '5'
 }
 
-function getGradeColor(percentage: number | null) {
-  const value = percentage ?? 0
-
-  if (value < 50) return 'text-red-600'
-  if (value <= 70) return 'text-yellow-600'
-  if (value <= 84) return 'text-blue-600'
-
-  return 'text-green-600'
-}
+/*
+|--------------------------------------------------------------------------
+| ЦВЕТ ПРОЦЕНТА
+|--------------------------------------------------------------------------
+*/
 
 function getPercentColor(percentage: number | null) {
-  const value = percentage ?? 0
+  const value = Number(percentage ?? 0)
 
   if (value < 50) return 'text-red-600'
   if (value <= 70) return 'text-yellow-600'
@@ -323,19 +449,35 @@ function getPercentColor(percentage: number | null) {
   return 'text-green-600'
 }
 
-function formatDate(date: string | null) {
-  if (!date) {
-    return '—'
+/*
+|--------------------------------------------------------------------------
+| ЦВЕТ ФОНА ОЦЕНКИ
+|--------------------------------------------------------------------------
+*/
+
+function getGradeBackground(percentage: number | null) {
+  const value = Number(percentage ?? 0)
+
+  if (value < 50) {
+    return 'bg-red-100 text-red-700'
   }
 
-  return new Date(date).toLocaleString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  if (value <= 70) {
+    return 'bg-yellow-100 text-yellow-700'
+  }
+
+  if (value <= 84) {
+    return 'bg-blue-100 text-blue-700'
+  }
+
+  return 'bg-green-100 text-green-700'
 }
+
+/*
+|--------------------------------------------------------------------------
+| ЗАПУСК
+|--------------------------------------------------------------------------
+*/
 
 onMounted(async () => {
   getStudentInfo()
