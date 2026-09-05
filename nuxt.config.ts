@@ -11,6 +11,10 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
   ],
 
+  supabase: {
+    redirect: false,
+  },
+
   css: [
     '~/main.css',
   ],
