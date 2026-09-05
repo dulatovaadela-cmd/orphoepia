@@ -1,491 +1,645 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-amber-100 via-pink-50 to-purple-100 px-4 py-6 sm:py-10"
+    class="relative min-h-screen bg-gradient-to-br from-amber-100 via-pink-50 to-purple-100 px-4 py-6 sm:px-6 lg:px-8"
   >
-    <!-- ===================== ВИКТОРИНА ===================== -->
-    <div v-if="!finished" class="mx-auto max-w-5xl">
+    <!-- ========================================================= -->
+    <!-- ОСНОВНАЯ ОБЛАСТЬ -->
+    <!-- ========================================================= -->
 
-      <!-- Верхняя часть -->
-      <div
-        class="relative overflow-hidden rounded-[30px] border border-amber-200 bg-white/95 p-5 shadow-2xl sm:p-8"
-      >
-        <!-- декоративные кружочки -->
-        <div class="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-yellow-200/40"></div>
-        <div class="pointer-events-none absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-pink-200/40"></div>
+    <div
+      v-if="!finished"
+      class="relative mx-auto max-w-[1400px]"
+    >
+      <!-- ======================================================= -->
+      <!-- ЗАДАНИЕ -->
+      <!-- ======================================================= -->
 
+      <div class="mx-auto max-w-5xl">
         <!-- Заголовок -->
-        <div class="relative z-10 text-center">
-          <div
-            class="mb-3 inline-flex items-center rounded-full bg-amber-100 px-5 py-2 text-sm font-bold text-amber-800 shadow-sm"
-          >
-            ✍️ Орфоэпический тренажёр
+        <div
+          class="mb-5 rounded-[28px] border-2 border-purple-200 bg-white/95 p-5 shadow-xl sm:p-7"
+        >
+          <div class="mb-2 text-center text-3xl sm:text-4xl">
+            ✍️
           </div>
 
           <h1
-            class="text-2xl font-black tracking-tight text-gray-800 sm:text-4xl"
+            class="text-center text-2xl font-extrabold text-purple-800 sm:text-3xl"
           >
-            ✍️ Найди ошибку в ударении
+            Найди ошибку в ударении
           </h1>
 
-          <p class="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-600 sm:text-base">
-            В каждом ряду одно слово с неправильным ударением.
-            <span class="font-bold text-amber-700">
-              Введите его правильно.
-            </span>
+          <p
+            class="mx-auto mt-3 max-w-2xl text-center text-sm leading-6 text-gray-600 sm:text-base"
+          >
+            В каждой строке одно слово имеет неправильное ударение.
+            Напиши правильный вариант этого слова.
           </p>
         </div>
 
         <!-- Прогресс -->
-        <div class="relative z-10 mt-7">
-          <div class="mb-2 flex items-center justify-between text-xs font-bold text-gray-500">
-            <span>Вопрос {{ currentIdx + 1 }} из {{ tasks.length }}</span>
-            <span>{{ Math.round(((currentIdx + 1) / tasks.length) * 100) }}%</span>
+        <div
+          class="mb-5 rounded-2xl border-2 border-white/70 bg-white/80 p-4 shadow-lg"
+        >
+          <div class="mb-2 flex items-center justify-between">
+            <span class="text-sm font-bold text-purple-700">
+              Вопрос {{ currentIdx + 1 }} из {{ tasks.length }}
+            </span>
+
+            <span class="text-sm font-bold text-gray-500">
+              {{ Math.round(((currentIdx + 1) / tasks.length) * 100) }}%
+            </span>
           </div>
 
-          <div class="h-3 overflow-hidden rounded-full bg-amber-100">
+          <div class="h-3 overflow-hidden rounded-full bg-purple-100">
             <div
-              class="h-full rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 transition-all duration-500"
-              :style="{ width: `${((currentIdx + 1) / tasks.length) * 100}%` }"
-            ></div>
+              class="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+              :style="{
+                width: `${((currentIdx + 1) / tasks.length) * 100}%`
+              }"
+            />
           </div>
         </div>
 
-        <!-- Задание -->
+        <!-- ===================================================== -->
+        <!-- КАРТОЧКА ЗАДАНИЯ -->
+        <!-- ===================================================== -->
+
         <div
-          class="relative z-10 mt-8 rounded-[26px] border-2 border-amber-200 bg-gradient-to-br from-[#fffaf0] to-[#fff4dc] p-5 shadow-inner sm:p-8"
+          class="relative overflow-hidden rounded-[30px] border-2 border-amber-200 bg-white/95 p-5 shadow-2xl sm:p-8"
         >
-          <div class="mb-5 text-center">
-            <span
-              class="inline-flex items-center justify-center rounded-full bg-amber-200 px-4 py-1.5 text-sm font-black text-amber-900"
+          <!-- Декоративные элементы -->
+          <div
+            class="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-pink-100/60 blur-2xl"
+          />
+
+          <div
+            class="pointer-events-none absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-purple-100/60 blur-2xl"
+          />
+
+          <!-- Номер -->
+          <div
+            class="relative z-10 mb-6 flex justify-center"
+          >
+            <div
+              class="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-5 py-2 text-sm font-extrabold text-white shadow-lg"
             >
-              Задание №{{ currentIdx + 1 }}
-            </span>
+              Вопрос {{ currentIdx + 1 }}
+            </div>
+          </div>
+
+          <!-- Инструкция -->
+          <div
+            class="relative z-10 mb-5 rounded-2xl bg-amber-50 p-4 text-center"
+          >
+            <p class="font-semibold text-gray-700">
+              Найди слово с ошибкой и напиши его правильно.
+            </p>
           </div>
 
           <!-- Строка слов -->
           <div
-            class="rounded-2xl border border-amber-200 bg-white/80 px-4 py-5 text-center text-lg font-bold leading-9 text-gray-800 shadow-sm sm:px-8 sm:text-xl"
+            class="relative z-10 mb-8 rounded-[24px] border-2 border-purple-100 bg-gradient-to-br from-purple-50 to-pink-50 px-4 py-7 text-center shadow-inner sm:px-8"
           >
-            {{ currentTask.row }}
+            <p
+              class="break-words text-xl font-bold leading-loose text-gray-800 sm:text-2xl"
+            >
+              {{ currentTask.row }}
+            </p>
           </div>
 
-          <!-- Поле ответа -->
-          <div class="relative mx-auto mt-8 max-w-2xl">
+          <!-- Поле ответа + лапка -->
+          <div
+            class="relative z-10 mx-auto max-w-2xl"
+          >
             <label
-              class="mb-2 block text-center text-sm font-bold text-gray-600"
+              class="mb-3 block text-center text-base font-extrabold text-purple-700 sm:text-lg"
             >
-              Введите правильный вариант:
+              ✏️ Твой ответ
             </label>
 
-            <div class="relative">
+            <div
+              class="relative flex items-center gap-2"
+            >
+              <!-- Поле -->
               <input
                 v-model="userAnswer"
-                :disabled="showResult"
                 type="text"
                 autocomplete="off"
-                placeholder="Например: жалюзИ"
-                class="answer-input w-full rounded-2xl border-3 px-5 py-4 pr-28 text-center text-lg font-black outline-none transition-all duration-300 placeholder:font-medium placeholder:text-gray-400"
-                :class="{
-                  'border-gray-300 bg-white shadow-md focus:border-amber-400 focus:ring-4 focus:ring-amber-100':
-                    !showResult,
-
-                  'border-green-500 bg-green-100 text-green-800 shadow-[0_0_25px_rgba(34,197,94,0.35)] ring-4 ring-green-200':
-                    showResult && isCorrect,
-
-                  'border-red-500 bg-red-100 text-red-800 shadow-[0_0_20px_rgba(239,68,68,0.25)] ring-4 ring-red-200':
-                    showResult && !isCorrect
-                }"
+                :disabled="showResult"
+                placeholder="Напиши правильное ударение..."
+                class="h-14 min-w-0 flex-1 rounded-2xl border-3 border-purple-200 bg-white px-5 text-center text-lg font-bold text-gray-800 shadow-lg outline-none transition-all placeholder:text-sm placeholder:font-medium placeholder:text-gray-400 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 disabled:bg-gray-50 sm:text-xl"
                 @keyup.enter="checkAnswer"
               />
 
-              <!-- Зеленая галочка -->
-              <div
-                v-if="showResult && isCorrect"
-                class="absolute right-5 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-green-500 text-2xl font-black text-white shadow-lg"
-              >
-                ✓
-              </div>
-
-              <!-- Красный крест -->
-              <div
-                v-if="showResult && !isCorrect"
-                class="absolute right-5 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-red-500 text-2xl font-black text-white shadow-lg"
-              >
-                ×
-              </div>
-
-              <!-- ================= ЛАПКА ================= -->
-              <div
-                v-if="showPaw && isCorrect"
-                class="paw-wrapper pointer-events-none absolute -right-7 top-1/2 z-30 -translate-y-1/2 sm:-right-12"
-              >
-                <div class="paw-spark spark-one">✦</div>
-                <div class="paw-spark spark-two">✦</div>
-                <div class="paw-spark spark-three">✧</div>
-                <div class="paw-spark spark-four">✦</div>
-
-                <svg
-                  class="paw-svg"
-                  viewBox="0 0 120 120"
-                  xmlns="http://www.w3.org/2000/svg"
+              <!-- ЛАПКА -->
+              <transition name="paw-attack">
+                <div
+                  v-if="showPaw"
+                  class="paw-wrapper pointer-events-none absolute -right-4 top-1/2 z-30 -translate-y-1/2 sm:-right-8"
                 >
-                  <defs>
-                    <radialGradient
-                      id="pawFur"
-                      cx="35%"
-                      cy="30%"
-                      r="75%"
-                    >
-                      <stop offset="0%" stop-color="#f8d58a" />
-                      <stop offset="45%" stop-color="#d99538" />
-                      <stop offset="80%" stop-color="#a85d20" />
-                      <stop offset="100%" stop-color="#743914" />
-                    </radialGradient>
+                  <svg
+                    class="paw-svg"
+                    viewBox="0 0 120 120"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <defs>
+                      <radialGradient
+                        id="pawFur"
+                        cx="35%"
+                        cy="25%"
+                        r="80%"
+                      >
+                        <stop
+                          offset="0%"
+                          stop-color="#f6c66a"
+                        />
+                        <stop
+                          offset="45%"
+                          stop-color="#d89a3d"
+                        />
+                        <stop
+                          offset="100%"
+                          stop-color="#9a5d20"
+                        />
+                      </radialGradient>
 
-                    <radialGradient
-                      id="pawPad"
-                      cx="35%"
-                      cy="25%"
-                      r="75%"
-                    >
-                      <stop offset="0%" stop-color="#ffd5c4" />
-                      <stop offset="55%" stop-color="#ee8c87" />
-                      <stop offset="100%" stop-color="#bd4e58" />
-                    </radialGradient>
+                      <radialGradient
+                        id="pawPad"
+                        cx="35%"
+                        cy="25%"
+                        r="80%"
+                      >
+                        <stop
+                          offset="0%"
+                          stop-color="#ffb6c9"
+                        />
+                        <stop
+                          offset="100%"
+                          stop-color="#e85d7f"
+                        />
+                      </radialGradient>
 
-                    <filter id="pawShadow">
-                      <feDropShadow
-                        dx="0"
-                        dy="7"
-                        stdDeviation="5"
-                        flood-opacity="0.35"
-                      />
-                    </filter>
-                  </defs>
+                      <filter
+                        id="pawShadow"
+                        x="-50%"
+                        y="-50%"
+                        width="200%"
+                        height="200%"
+                      >
+                        <feDropShadow
+                          dx="0"
+                          dy="5"
+                          stdDeviation="4"
+                          flood-opacity=".35"
+                        />
+                      </filter>
+                    </defs>
 
-                  <!-- лапка -->
-                  <g filter="url(#pawShadow)">
-                    <!-- пальцы -->
+                    <!-- Внешнее свечение -->
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="48"
+                      fill="rgba(255,210,80,.22)"
+                    />
+
+                    <!-- Большая подушечка -->
                     <ellipse
-                      cx="28"
-                      cy="35"
-                      rx="14"
-                      ry="20"
-                      transform="rotate(-28 28 35)"
+                      cx="60"
+                      cy="72"
+                      rx="31"
+                      ry="27"
                       fill="url(#pawFur)"
+                      stroke="#713c17"
+                      stroke-width="2"
+                      filter="url(#pawShadow)"
+                    />
+
+                    <!-- Леопардовые пятна -->
+                    <ellipse
+                      cx="44"
+                      cy="65"
+                      rx="5"
+                      ry="7"
+                      fill="#4a2813"
+                      transform="rotate(-25 44 65)"
                     />
                     <ellipse
-                      cx="48"
-                      cy="22"
-                      rx="14"
-                      ry="21"
-                      transform="rotate(-10 48 22)"
-                      fill="url(#pawFur)"
+                      cx="76"
+                      cy="62"
+                      rx="5"
+                      ry="8"
+                      fill="#4a2813"
+                      transform="rotate(25 76 62)"
                     />
                     <ellipse
-                      cx="69"
-                      cy="22"
-                      rx="14"
-                      ry="21"
-                      transform="rotate(12 69 22)"
-                      fill="url(#pawFur)"
+                      cx="52"
+                      cy="86"
+                      rx="4"
+                      ry="5"
+                      fill="#4a2813"
+                      transform="rotate(20 52 86)"
                     />
                     <ellipse
-                      cx="90"
-                      cy="35"
-                      rx="14"
-                      ry="20"
-                      transform="rotate(28 90 35)"
-                      fill="url(#pawFur)"
+                      cx="70"
+                      cy="87"
+                      rx="4"
+                      ry="5"
+                      fill="#4a2813"
+                      transform="rotate(-20 70 87)"
                     />
 
-                    <!-- основа -->
-                    <path
-                      d="M27 58
-                         C25 47 34 40 46 43
-                         C52 45 56 48 60 48
-                         C65 48 70 44 76 43
-                         C88 40 97 48 95 60
-                         C94 69 104 78 99 91
-                         C94 105 78 109 61 108
-                         C43 108 27 103 23 90
-                         C19 77 29 69 27 58Z"
-                      fill="url(#pawFur)"
-                    />
-
-                    <!-- леопардовые пятна -->
-                    <g fill="#4f2917" opacity="0.9">
-                      <ellipse cx="31" cy="30" rx="4" ry="3" transform="rotate(-25 31 30)" />
-                      <ellipse cx="44" cy="14" rx="4" ry="3" transform="rotate(15 44 14)" />
-                      <ellipse cx="55" cy="29" rx="4" ry="3" transform="rotate(-18 55 29)" />
-                      <ellipse cx="74" cy="13" rx="4" ry="3" transform="rotate(-15 74 13)" />
-                      <ellipse cx="84" cy="29" rx="4" ry="3" transform="rotate(22 84 29)" />
-
-                      <ellipse cx="39" cy="58" rx="5" ry="3" transform="rotate(25 39 58)" />
-                      <ellipse cx="51" cy="70" rx="4" ry="3" transform="rotate(-15 51 70)" />
-                      <ellipse cx="77" cy="58" rx="5" ry="3" transform="rotate(-20 77 58)" />
-                      <ellipse cx="87" cy="73" rx="4" ry="3" transform="rotate(20 87 73)" />
-                      <ellipse cx="34" cy="82" rx="4" ry="3" transform="rotate(-20 34 82)" />
-                      <ellipse cx="48" cy="94" rx="5" ry="3" transform="rotate(20 48 94)" />
-                      <ellipse cx="72" cy="91" rx="5" ry="3" transform="rotate(-25 72 91)" />
-                      <ellipse cx="91" cy="88" rx="4" ry="3" transform="rotate(15 91 88)" />
-                    </g>
-
-                    <!-- пятна-кольца -->
-                    <g fill="none" stroke="#4f2917" stroke-width="3">
-                      <ellipse cx="27" cy="70" rx="5" ry="7" />
-                      <ellipse cx="62" cy="63" rx="6" ry="5" />
-                      <ellipse cx="81" cy="83" rx="6" ry="7" />
-                      <ellipse cx="59" cy="94" rx="6" ry="4" />
-                    </g>
-
-                    <!-- подушечки пальцев -->
-                    <ellipse cx="28" cy="36" rx="7" ry="9" fill="url(#pawPad)" />
-                    <ellipse cx="48" cy="22" rx="7" ry="10" fill="url(#pawPad)" />
-                    <ellipse cx="69" cy="22" rx="7" ry="10" fill="url(#pawPad)" />
-                    <ellipse cx="90" cy="36" rx="7" ry="9" fill="url(#pawPad)" />
-
-                    <!-- центральная подушечка -->
-                    <path
-                      d="M42 68
-                         C40 58 49 52 60 55
-                         C71 52 80 58 78 68
-                         C77 76 70 82 60 83
-                         C50 82 43 76 42 68Z"
+                    <!-- Подушечка -->
+                    <ellipse
+                      cx="60"
+                      cy="72"
+                      rx="17"
+                      ry="15"
                       fill="url(#pawPad)"
                     />
 
-                    <!-- блики -->
+                    <!-- Пальчики -->
                     <ellipse
-                      cx="51"
-                      cy="64"
-                      rx="5"
-                      ry="2.5"
-                      fill="#fff"
-                      opacity="0.5"
-                      transform="rotate(-25 51 64)"
+                      cx="28"
+                      cy="45"
+                      rx="11"
+                      ry="16"
+                      fill="url(#pawFur)"
+                      stroke="#713c17"
+                      stroke-width="2"
+                      transform="rotate(-35 28 45)"
                     />
 
                     <ellipse
-                      cx="45"
-                      cy="19"
-                      rx="2.5"
-                      ry="4"
-                      fill="#fff"
-                      opacity="0.45"
+                      cx="47"
+                      cy="31"
+                      rx="11"
+                      ry="17"
+                      fill="url(#pawFur)"
+                      stroke="#713c17"
+                      stroke-width="2"
+                      transform="rotate(-12 47 31)"
                     />
-                  </g>
-                </svg>
-              </div>
+
+                    <ellipse
+                      cx="69"
+                      cy="31"
+                      rx="11"
+                      ry="17"
+                      fill="url(#pawFur)"
+                      stroke="#713c17"
+                      stroke-width="2"
+                      transform="rotate(12 69 31)"
+                    />
+
+                    <ellipse
+                      cx="91"
+                      cy="45"
+                      rx="11"
+                      ry="16"
+                      fill="url(#pawFur)"
+                      stroke="#713c17"
+                      stroke-width="2"
+                      transform="rotate(35 91 45)"
+                    />
+
+                    <!-- Розовые подушечки пальцев -->
+                    <ellipse
+                      cx="28"
+                      cy="47"
+                      rx="6"
+                      ry="8"
+                      fill="#ed7190"
+                    />
+
+                    <ellipse
+                      cx="47"
+                      cy="33"
+                      rx="6"
+                      ry="8"
+                      fill="#ed7190"
+                    />
+
+                    <ellipse
+                      cx="69"
+                      cy="33"
+                      rx="6"
+                      ry="8"
+                      fill="#ed7190"
+                    />
+
+                    <ellipse
+                      cx="91"
+                      cy="47"
+                      rx="6"
+                      ry="8"
+                      fill="#ed7190"
+                    />
+
+                    <!-- Блики -->
+                    <ellipse
+                      cx="52"
+                      cy="65"
+                      rx="5"
+                      ry="3"
+                      fill="rgba(255,255,255,.45)"
+                    />
+
+                    <!-- Искры -->
+                    <g class="spark spark-1">
+                      <path
+                        d="M15 18 L18 27 L27 30 L18 33 L15 42 L12 33 L3 30 L12 27 Z"
+                        fill="#ffd43b"
+                      />
+                    </g>
+
+                    <g class="spark spark-2">
+                      <path
+                        d="M105 13 L108 21 L116 24 L108 27 L105 35 L102 27 L94 24 L102 21 Z"
+                        fill="#ffcc33"
+                      />
+                    </g>
+
+                    <g class="spark spark-3">
+                      <path
+                        d="M102 79 L104 85 L111 87 L104 89 L102 96 L100 89 L93 87 L100 85 Z"
+                        fill="#ffdf55"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </transition>
             </div>
 
-            <!-- кнопка -->
+            <!-- Кнопка -->
             <button
               v-if="!showResult"
+              type="button"
+              class="mt-5 w-full rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-4 text-lg font-extrabold text-white shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl active:translate-y-0"
               @click="checkAnswer"
-              class="mt-5 w-full rounded-2xl bg-gradient-to-r from-amber-400 via-orange-400 to-pink-400 px-6 py-4 text-base font-black text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:shadow-xl active:translate-y-0"
             >
               Проверить ответ ✓
             </button>
           </div>
 
-          <!-- Результат -->
+          <!-- =================================================== -->
+          <!-- РЕЗУЛЬТАТ -->
+          <!-- =================================================== -->
+
           <transition name="result">
             <div
               v-if="showResult"
-              class="mx-auto mt-7 max-w-2xl rounded-2xl border-2 p-5 text-center"
-              :class="
-                isCorrect
-                  ? 'border-green-300 bg-green-100'
-                  : 'border-red-300 bg-red-100'
-              "
+              class="relative z-10 mx-auto mt-7 max-w-2xl"
             >
+              <!-- Правильно -->
               <div
                 v-if="isCorrect"
-                class="text-xl font-black text-green-700"
+                class="rounded-[24px] border-4 border-green-400 bg-green-100 p-5 text-center shadow-xl sm:p-6"
               >
-                🎉 Верно!
+                <div class="mb-2 text-4xl">
+                  🎉
+                </div>
+
+                <p
+                  class="text-xl font-extrabold text-green-700 sm:text-2xl"
+                >
+                  Правильно!
+                </p>
+
+                <p
+                  class="mt-2 font-semibold text-green-700"
+                >
+                  Отлично! Ты правильно нашла ошибку.
+                </p>
               </div>
 
+              <!-- Неправильно -->
               <div
                 v-else
-                class="text-xl font-black text-red-700"
+                class="rounded-[24px] border-4 border-red-300 bg-red-50 p-5 text-center shadow-xl sm:p-6"
               >
-                ❌ Неверно
+                <div class="mb-2 text-4xl">
+                  💡
+                </div>
+
+                <p
+                  class="text-xl font-extrabold text-red-600 sm:text-2xl"
+                >
+                  Попробуй ещё раз!
+                </p>
+
+                <p
+                  class="mt-2 text-gray-700"
+                >
+                  Правильный вариант:
+                  <span
+                    class="font-extrabold text-green-600"
+                  >
+                    {{ currentTask.correct }}
+                  </span>
+                </p>
               </div>
-
-              <p
-                v-if="!isCorrect"
-                class="mt-2 text-sm font-semibold text-red-700"
-              >
-                Правильный вариант:
-                <span class="font-black">
-                  {{ currentTask.correct }}
-                </span>
-              </p>
-
-              <p
-                v-else
-                class="mt-2 text-sm font-semibold text-green-700"
-              >
-                Отлично! Ударение указано правильно.
-              </p>
             </div>
           </transition>
-        </div>
 
-        <!-- Навигация -->
-        <div class="relative z-10 mt-7 flex items-center justify-between gap-3">
-          <button
-            @click="prevTask"
-            :disabled="currentIdx === 0"
-            class="rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-600 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 sm:px-6"
-          >
-            ← Назад
-          </button>
+          <!-- =================================================== -->
+          <!-- КНОПКИ ПЕРЕХОДА -->
+          <!-- =================================================== -->
 
-          <button
-            v-if="currentIdx < tasks.length - 1"
-            @click="nextUnlocked"
-            class="rounded-xl bg-gray-800 px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-gray-700 sm:px-7"
+          <div
+            class="relative z-10 mt-8 flex flex-col gap-3 sm:flex-row sm:justify-between"
           >
-            Далее →
-          </button>
+            <button
+              type="button"
+              :disabled="currentIdx === 0"
+              class="rounded-2xl border-2 border-purple-200 bg-white px-6 py-3 font-extrabold text-purple-700 shadow-md transition-all hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-40"
+              @click="prevTask"
+            >
+              ← Назад
+            </button>
 
-          <button
-            v-else
-            @click="nextTask"
-            class="rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-5 py-3 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 sm:px-7"
-          >
-            Завершить ✓
-          </button>
+            <button
+              v-if="showResult && currentIdx < tasks.length - 1"
+              type="button"
+              class="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-7 py-3 font-extrabold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
+              @click="nextUnlocked"
+            >
+              Следующий вопрос →
+            </button>
+
+            <button
+              v-if="showResult && currentIdx === tasks.length - 1"
+              type="button"
+              class="rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 px-7 py-3 font-extrabold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
+              @click="nextTask"
+            >
+              Завершить ✓
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- ================= НУМЕРАЦИЯ ================= -->
+      <!-- ======================================================= -->
+      <!-- ОКНО НУМЕРАЦИИ -->
+      <!-- ======================================================= -->
+
       <div
-        class="mt-6 rounded-[26px] border-2 border-[#d7b98b] bg-[#f7ead2] p-4 shadow-xl sm:p-6"
+        class="
+          mt-6
+          rounded-[26px]
+          border-2 border-[#d7b98b]
+          bg-[#f7ead2]
+          p-4
+          shadow-xl
+          sm:p-5
+
+          lg:absolute
+          lg:right-0
+          lg:top-0
+          lg:mt-0
+          lg:w-72
+        "
       >
-        <div class="mb-4 text-center">
-          <span class="text-sm font-black text-[#795548]">
-            📋 Вопросы
-          </span>
+        <div
+          class="mb-4 text-center text-base font-extrabold text-[#795548]"
+        >
+          Номера вопросов
         </div>
 
-        <div class="grid grid-cols-5 gap-2.5 sm:gap-3">
+        <div
+          class="grid grid-cols-5 gap-2"
+        >
           <button
-            v-for="(_, index) in tasks"
+            v-for="(item, index) in tasks"
             :key="index"
+            type="button"
+            :class="[
+              'min-h-[45px] rounded-xl border-2 text-sm font-extrabold transition-all duration-200',
+
+              currentIdx === index
+                ? 'border-purple-600 bg-purple-500 text-white shadow-lg scale-105'
+                : answered[index]
+                  ? 'border-green-500 bg-green-400 text-white shadow-md'
+                  : 'border-[#d7b98b] bg-[#fff8eb] text-[#795548] hover:bg-white hover:scale-105'
+            ]"
             @click="jumpTo(index)"
-            class="number-button flex aspect-square items-center justify-center rounded-xl text-sm font-black shadow-sm transition-all duration-200 sm:text-base"
-            :class="{
-              'scale-105 bg-blue-500 text-white shadow-lg ring-4 ring-blue-200':
-                currentIdx === index,
-
-              'bg-green-500 text-white shadow-md hover:bg-green-600':
-                currentIdx !== index && answered[index],
-
-              'bg-[#fffaf1] text-[#795548] hover:-translate-y-0.5 hover:bg-white':
-                currentIdx !== index && !answered[index]
-            }"
           >
             {{ index + 1 }}
           </button>
         </div>
 
-        <div class="mt-5 flex flex-wrap justify-center gap-4 text-xs font-semibold text-gray-600">
-          <div class="flex items-center gap-1.5">
-            <span class="h-3 w-3 rounded bg-blue-500"></span>
-            Текущий
+        <!-- Легенда -->
+        <div
+          class="mt-4 space-y-2 text-xs font-semibold text-[#795548]"
+        >
+          <div class="flex items-center gap-2">
+            <span
+              class="h-4 w-4 rounded-md border-2 border-purple-600 bg-purple-500"
+            />
+            Текущий вопрос
           </div>
 
-          <div class="flex items-center gap-1.5">
-            <span class="h-3 w-3 rounded bg-green-500"></span>
+          <div class="flex items-center gap-2">
+            <span
+              class="h-4 w-4 rounded-md border-2 border-green-500 bg-green-400"
+            />
             Отвечено
           </div>
 
-          <div class="flex items-center gap-1.5">
-            <span class="h-3 w-3 rounded bg-[#fffaf1] border border-[#d7b98b]"></span>
+          <div class="flex items-center gap-2">
+            <span
+              class="h-4 w-4 rounded-md border-2 border-[#d7b98b] bg-[#fff8eb]"
+            />
             Не отвечено
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ===================== РЕЗУЛЬТАТ ===================== -->
+    <!-- ========================================================= -->
+    <!-- ФИНАЛЬНЫЙ РЕЗУЛЬТАТ -->
+    <!-- ========================================================= -->
+
     <div
       v-else
-      class="mx-auto flex min-h-[80vh] max-w-2xl items-center justify-center"
+      class="mx-auto flex min-h-[80vh] max-w-3xl items-center justify-center"
     >
       <div
-        class="w-full rounded-[32px] border-2 border-amber-200 bg-white p-7 text-center shadow-2xl sm:p-10"
+        class="w-full rounded-[32px] border-2 border-purple-200 bg-white p-7 text-center shadow-2xl sm:p-10"
       >
-        <div class="text-6xl">🎉</div>
+        <div class="mb-4 text-6xl">
+          🐆
+        </div>
 
-        <h2 class="mt-4 text-3xl font-black text-gray-800 sm:text-4xl">
-          Тренажёр завершён!
+        <h2
+          class="text-3xl font-extrabold text-purple-800 sm:text-4xl"
+        >
+          Задание завершено!
         </h2>
 
-        <p class="mt-3 text-gray-600">
-          {{ studentName }}, вот твой результат:
+        <p
+          class="mt-4 text-lg text-gray-600"
+        >
+          {{ studentName }}, твой результат:
         </p>
 
         <div
-          class="mx-auto mt-7 max-w-sm rounded-3xl bg-gradient-to-br from-amber-100 to-pink-100 p-7"
+          class="mx-auto mt-7 max-w-sm rounded-[26px] bg-gradient-to-br from-purple-50 to-pink-50 p-7"
         >
-          <div class="text-sm font-bold text-gray-600">
-            Правильных ответов
+          <div
+            class="text-5xl font-extrabold text-purple-700"
+          >
+            {{ correctCount }} / {{ tasks.length }}
           </div>
 
-          <div class="mt-1 text-5xl font-black text-gray-800">
-            {{ correctCount }}/{{ tasks.length }}
-          </div>
-
-          <div class="mt-2 text-2xl font-black text-amber-600">
+          <div
+            class="mt-2 text-xl font-bold text-gray-700"
+          >
             {{ percent }}%
           </div>
 
-          <div class="mt-3 text-lg font-black text-gray-700">
+          <div
+            class="mt-4 text-4xl"
+          >
+            {{ grade === 5 ? '🏆' : grade === 4 ? '🌟' : grade === 3 ? '👍' : '💪' }}
+          </div>
+
+          <div
+            class="mt-2 text-xl font-extrabold text-purple-700"
+          >
             Оценка: {{ grade }}
           </div>
         </div>
 
         <div
-          v-if="saveStatus === 'saving'"
-          class="mt-5 text-sm font-semibold text-gray-500"
+          class="mt-6 text-sm"
+          :class="{
+            'text-green-600': saveStatus === 'saved',
+            'text-orange-500': saveStatus === 'saving',
+            'text-red-500': saveStatus === 'error'
+          }"
         >
-          ⏳ Сохраняем результат...
+          <span v-if="saveStatus === 'saved'">
+            ✓ Результат сохранён
+          </span>
+
+          <span v-else-if="saveStatus === 'saving'">
+            Сохраняем результат...
+          </span>
+
+          <span v-else>
+            Не удалось сохранить результат
+          </span>
         </div>
 
-        <div
-          v-else-if="saveStatus === 'saved'"
-          class="mt-5 text-sm font-bold text-green-600"
+        <button
+          type="button"
+          class="mt-7 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-8 py-4 font-extrabold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:shadow-2xl"
+          @click="navigateTo('/')"
         >
-          ✓ Результат сохранён
-        </div>
-
-        <div
-          v-else
-          class="mt-5 text-sm font-bold text-red-600"
-        >
-          ⚠️ Не удалось сохранить результат
-        </div>
-
-        <div class="mt-7 flex flex-col gap-3 sm:flex-row">
-          <button
-            @click="navigateTo('/results')"
-            class="flex-1 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-4 font-black text-white shadow-lg transition hover:-translate-y-0.5"
-          >
-            📊 Мои результаты
-          </button>
-
-          <button
-            @click="navigateTo('/')"
-            class="flex-1 rounded-2xl bg-gray-800 px-5 py-4 font-black text-white shadow-lg transition hover:bg-gray-700"
-          >
-            🏠 На главную
-          </button>
-        </div>
+          Вернуться к заданиям
+        </button>
       </div>
     </div>
   </div>
@@ -507,21 +661,66 @@ interface Student {
 const supabase = useSupabaseClient()
 
 const tasks: Task[] = [
-  { row: 'жАлюзи, языковОй (факт), позвонИшь, куУхонный', correct: 'жалюзИ' },
-  { row: 'тОрты, красивЕе, позвонИшь, крапИва', correct: 'красИвее' },
-  { row: 'договОр, пОняла, столЯр, алфавИт', correct: 'понялА' },
-  { row: 'бАловать, вЕрба, позвонИшь, комбАйнер', correct: 'баловАть' },
-  { row: 'завИдно, жалюзИ, каталОг, дремотА', correct: 'дремОта' },
-  { row: 'приговОр, разОгнутый, газопровОд, рАкушка', correct: 'ракУшка' },
-  { row: 'бантЫ, взялА, экспЕрт, чЕрпать', correct: 'бАнты' },
-  { row: 'кружевА, агрономИя, зАговор, столЯр', correct: 'агронОмия' },
-  { row: 'хозяевА, каучУк, ободрИть, житиЕ', correct: 'хозЯева' },
-  { row: 'ветеринАрия, фарфОр, упрочЕние, взялА', correct: 'упрОчение' },
-  { row: 'шАрфы, бытиЕ, подОгнутый, индУстрия', correct: 'индустрИя' },
-  { row: 'досУг, боЯзнь, кладбИще, эксперт', correct: 'клАдбище' },
-  { row: 'гУсеничный, трубопрОвод, врученА, киломЕтр', correct: 'трубопровОд' },
-  { row: 'сливОвый, манЯщий, столЯр, диалОг', correct: 'слИвовый' },
-  { row: 'рАзвитее, дефИс, Искра, тотчАс', correct: 'тОтчас' },
+  {
+    row: 'жАлюзи, языковОй (факт), позвонИшь, куУхонный',
+    correct: 'жалюзИ'
+  },
+  {
+    row: 'тОрты, красивЕе, позвонИшь, крапИва',
+    correct: 'красИвее'
+  },
+  {
+    row: 'договОр, пОняла, столЯр, алфавИт',
+    correct: 'понялА'
+  },
+  {
+    row: 'бАловать, вЕрба, позвонИшь, комбАйнер',
+    correct: 'баловАть'
+  },
+  {
+    row: 'завИдно, жалюзИ, каталОг, дремотА',
+    correct: 'дремОта'
+  },
+  {
+    row: 'приговОр, разОгнутый, газопровОд, рАкушка',
+    correct: 'ракУшка'
+  },
+  {
+    row: 'бантЫ, взялА, экспЕрт, чЕрпать',
+    correct: 'бАнты'
+  },
+  {
+    row: 'кружевА, агрономИя, зАговор, столЯр',
+    correct: 'агронОмия'
+  },
+  {
+    row: 'хозяевА, каучУк, ободрИть, житиЕ',
+    correct: 'хозЯева'
+  },
+  {
+    row: 'ветеринАрия, фарфОр, упрочЕние, взялА',
+    correct: 'упрОчение'
+  },
+  {
+    row: 'шАрфы, бытиЕ, подОгнутый, индУстрия',
+    correct: 'индустрИя'
+  },
+  {
+    row: 'досУг, боЯзнь, кладбИще, эксперт',
+    correct: 'клАдбище'
+  },
+  {
+    row: 'гУсеничный, трубопрОвод, врученА, киломЕтр',
+    correct: 'трубопровОд'
+  },
+  {
+    row: 'сливОвый, манЯщий, столЯр, диалОг',
+    correct: 'слИвовый'
+  },
+  {
+    row: 'рАзвитее, дефИс, Искра, тотчАс',
+    correct: 'тОтчас'
+  }
 ]
 
 const currentIdx = ref(0)
@@ -529,7 +728,10 @@ const userAnswer = ref('')
 const showResult = ref(false)
 const isCorrect = ref(false)
 const correctCount = ref(0)
-const answered = ref<boolean[]>(Array(tasks.length).fill(false))
+
+const answered = ref<boolean[]>(
+  Array(tasks.length).fill(false)
+)
 
 const studentName = ref('')
 const studentClass = ref('')
@@ -542,12 +744,15 @@ const saveStatus = ref<'saving' | 'saved' | 'error'>('saving')
 const finished = ref(false)
 
 const showPaw = ref(false)
+
 let pawTimer: ReturnType<typeof setTimeout> | null = null
 
 const currentTask = computed(() => tasks[currentIdx.value]!)
 
 const percent = computed(() =>
-  Math.round((correctCount.value / tasks.length) * 100)
+  Math.round(
+    (correctCount.value / tasks.length) * 100
+  )
 )
 
 const grade = computed(() => {
@@ -576,7 +781,8 @@ function triggerCorrectPaw() {
 }
 
 onMounted(async () => {
-  const savedStudent = localStorage.getItem('orphoepia_student')
+  const savedStudent =
+    localStorage.getItem('orphoepia_student')
 
   if (!savedStudent) {
     await navigateTo('/')
@@ -584,32 +790,46 @@ onMounted(async () => {
   }
 
   try {
-    const student: Student = JSON.parse(savedStudent)
+    const student: Student =
+      JSON.parse(savedStudent)
 
-    if (!student.name?.trim() || !student.class?.trim()) {
+    if (
+      !student.name?.trim() ||
+      !student.class?.trim()
+    ) {
       await navigateTo('/')
       return
     }
 
-    studentName.value = student.name.trim()
-    studentClass.value = student.class.trim()
+    studentName.value =
+      student.name.trim()
 
-    startedAt.value = new Date().toISOString()
+    studentClass.value =
+      student.class.trim()
 
-    const { data, error } = await supabase
-      .from('attempts')
-      .insert({
-        student_name: studentName.value,
-        class: studentClass.value,
-        task_name: 'Найди ошибку в ударении',
-        total_questions: tasks.length,
-        started_at: startedAt.value
-      })
-      .select('id')
-      .single()
+    startedAt.value =
+      new Date().toISOString()
+
+    const { data, error } =
+      await supabase
+        .from('attempts')
+        .insert({
+          student_name: studentName.value,
+          class: studentClass.value,
+          task_name:
+            'Найди ошибку в ударении',
+          total_questions: tasks.length,
+          started_at: startedAt.value
+        })
+        .select('id')
+        .single()
 
     if (error) {
-      console.error('Ошибка создания попытки:', error)
+      console.error(
+        'Ошибка создания попытки:',
+        error
+      )
+
       saveStatus.value = 'error'
       return
     }
@@ -617,7 +837,11 @@ onMounted(async () => {
     attemptId.value = data.id
     saveStatus.value = 'saving'
   } catch (error) {
-    console.error('Ошибка чтения данных ученика:', error)
+    console.error(
+      'Ошибка чтения данных ученика:',
+      error
+    )
+
     await navigateTo('/')
   }
 })
@@ -630,19 +854,25 @@ async function saveResult() {
 
   saveStatus.value = 'saving'
 
-  const completedAt = new Date().toISOString()
+  const completedAt =
+    new Date().toISOString()
 
-  const { error } = await supabase
-    .from('attempts')
-    .update({
-      score: correctCount.value,
-      percentage: percent.value,
-      completed_at: completedAt
-    })
-    .eq('id', attemptId.value)
+  const { error } =
+    await supabase
+      .from('attempts')
+      .update({
+        score: correctCount.value,
+        percentage: percent.value,
+        completed_at: completedAt
+      })
+      .eq('id', attemptId.value)
 
   if (error) {
-    console.error('Ошибка сохранения результата:', error)
+    console.error(
+      'Ошибка сохранения результата:',
+      error
+    )
+
     saveStatus.value = 'error'
     return
   }
@@ -657,7 +887,9 @@ function checkAnswer() {
   showResult.value = true
 
   isCorrect.value =
-    userAnswer.value.trim().toLowerCase() ===
+    userAnswer.value
+      .trim()
+      .toLowerCase() ===
     currentTask.value.correct.toLowerCase()
 
   answered.value[currentIdx.value] = true
@@ -676,8 +908,12 @@ function nextTask() {
     pawTimer = null
   }
 
-  if (currentIdx.value < tasks.length - 1) {
+  if (
+    currentIdx.value <
+    tasks.length - 1
+  ) {
     currentIdx.value++
+
     userAnswer.value = ''
     showResult.value = false
     isCorrect.value = false
@@ -697,6 +933,7 @@ function prevTask() {
 
   if (currentIdx.value > 0) {
     currentIdx.value--
+
     userAnswer.value = ''
     showResult.value = false
     isCorrect.value = false
@@ -711,8 +948,12 @@ function nextUnlocked() {
     pawTimer = null
   }
 
-  if (currentIdx.value < tasks.length - 1) {
+  if (
+    currentIdx.value <
+    tasks.length - 1
+  ) {
     currentIdx.value++
+
     userAnswer.value = ''
     showResult.value = false
     isCorrect.value = false
@@ -728,6 +969,7 @@ function jumpTo(index: number) {
   }
 
   currentIdx.value = index
+
   userAnswer.value = ''
   showResult.value = false
   isCorrect.value = false
@@ -741,151 +983,192 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.answer-input {
-  border-width: 3px;
-}
-
-/* ================= ЛАПКА ================= */
+/* ========================================================= */
+/* ЛАПКА */
+/* ========================================================= */
 
 .paw-wrapper {
   width: 105px;
   height: 105px;
-  animation: pawAttack 1.25s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  transform-origin: center;
 }
 
 .paw-svg {
   width: 105px;
   height: 105px;
   overflow: visible;
+  animation:
+    pawAttack 0.75s cubic-bezier(0.2, 1.4, 0.35, 1)
+      infinite alternate,
+    pawShake 0.28s ease-in-out infinite alternate;
   filter:
-    drop-shadow(0 8px 8px rgba(93, 45, 12, 0.35))
-    drop-shadow(0 0 14px rgba(255, 183, 77, 0.65));
+    drop-shadow(0 8px 8px rgba(75, 35, 10, 0.28))
+    drop-shadow(0 0 10px rgba(255, 190, 50, 0.7));
 }
 
-/* лапка будто оттягивает поле */
 @keyframes pawAttack {
   0% {
-    transform: translateX(55px) translateY(-50%) rotate(18deg) scale(0.78);
-    opacity: 0;
+    transform:
+      translateX(45px)
+      translateY(4px)
+      rotate(14deg)
+      scale(0.82);
   }
 
-  18% {
-    opacity: 1;
-    transform: translateX(22px) translateY(-50%) rotate(10deg) scale(1.08);
-  }
-
-  38% {
-    transform: translateX(-8px) translateY(-50%) rotate(-8deg) scale(1.18);
-  }
-
-  52% {
-    transform: translateX(4px) translateY(-50%) rotate(-2deg) scale(1.1);
-  }
-
-  70% {
-    transform: translateX(-3px) translateY(-50%) rotate(-6deg) scale(1.13);
+  55% {
+    transform:
+      translateX(10px)
+      translateY(-2px)
+      rotate(-4deg)
+      scale(1.02);
   }
 
   100% {
-    transform: translateX(45px) translateY(-50%) rotate(16deg) scale(0.9);
-    opacity: 0;
+    transform:
+      translateX(-8px)
+      translateY(0)
+      rotate(-12deg)
+      scale(1.08);
   }
 }
 
-/* сияние */
-.paw-wrapper::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 12px;
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 210, 90, 0.45),
-    rgba(255, 210, 90, 0) 70%
-  );
-  z-index: -1;
-  animation: pawGlow 0.8s ease-in-out infinite alternate;
-}
-
-@keyframes pawGlow {
-  from {
-    transform: scale(0.8);
-    opacity: 0.45;
+@keyframes pawShake {
+  0% {
+    filter:
+      drop-shadow(0 8px 8px rgba(75, 35, 10, 0.25))
+      drop-shadow(0 0 8px rgba(255, 190, 50, 0.55));
   }
 
-  to {
-    transform: scale(1.35);
-    opacity: 0.9;
+  100% {
+    filter:
+      drop-shadow(0 10px 10px rgba(75, 35, 10, 0.32))
+      drop-shadow(0 0 18px rgba(255, 210, 60, 0.95));
   }
 }
 
-/* искры */
-.paw-spark {
-  position: absolute;
-  z-index: 40;
-  color: #f59e0b;
-  font-size: 24px;
-  font-weight: 900;
-  text-shadow:
-    0 0 5px white,
-    0 0 12px #fbbf24,
-    0 0 20px #f59e0b;
-  animation: sparkJump 0.75s ease-in-out infinite;
+/* ========================================================= */
+/* ИСКРЫ */
+/* ========================================================= */
+
+.spark {
+  transform-origin: center;
+  animation: sparkJump 0.55s ease-in-out infinite alternate;
 }
 
-.spark-one {
-  left: 2px;
-  top: 2px;
+.spark-2 {
+  animation-delay: 0.15s;
 }
 
-.spark-two {
-  right: -5px;
-  top: 18px;
-  animation-delay: 0.18s;
-}
-
-.spark-three {
-  left: 18px;
-  bottom: 2px;
-  animation-delay: 0.35s;
-}
-
-.spark-four {
-  right: 8px;
-  bottom: 14px;
-  animation-delay: 0.5s;
+.spark-3 {
+  animation-delay: 0.3s;
 }
 
 @keyframes sparkJump {
-  0%,
-  100% {
-    transform: scale(0.6) rotate(0deg);
-    opacity: 0.2;
+  0% {
+    opacity: 0.45;
+    transform: scale(0.65) rotate(0deg);
   }
 
-  50% {
-    transform: scale(1.35) rotate(25deg);
+  100% {
     opacity: 1;
+    transform: scale(1.25) rotate(18deg);
   }
 }
 
-/* результат */
+/* ========================================================= */
+/* ПОЯВЛЕНИЕ ЛАПКИ */
+/* ========================================================= */
+
+.paw-attack-enter-active {
+  animation: pawEnter 0.55s cubic-bezier(0.15, 1.4, 0.3, 1);
+}
+
+.paw-attack-leave-active {
+  transition: all 0.2s ease;
+}
+
+.paw-attack-enter-from,
+.paw-attack-leave-to {
+  opacity: 0;
+  transform:
+    translate(90px, -50%)
+    scale(0.5)
+    rotate(25deg);
+}
+
+@keyframes pawEnter {
+  0% {
+    opacity: 0;
+    transform:
+      translate(100px, -50%)
+      rotate(25deg)
+      scale(0.45);
+  }
+
+  55% {
+    opacity: 1;
+    transform:
+      translate(-18px, -50%)
+      rotate(-10deg)
+      scale(1.12);
+  }
+
+  75% {
+    transform:
+      translate(8px, -50%)
+      rotate(8deg)
+      scale(0.96);
+  }
+
+  100% {
+    transform:
+      translate(0, -50%)
+      rotate(0deg)
+      scale(1);
+  }
+}
+
+/* ========================================================= */
+/* РЕЗУЛЬТАТ */
+/* ========================================================= */
+
 .result-enter-active,
 .result-leave-active {
-  transition: all 0.35s ease;
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
 }
 
 .result-enter-from,
 .result-leave-to {
   opacity: 0;
-  transform: translateY(10px) scale(0.97);
+  transform: translateY(12px) scale(0.98);
 }
 
-/* номера */
-.number-button {
-  min-height: 45px;
+/* ========================================================= */
+/* МОБИЛЬНЫЙ ЭКРАН */
+/* ========================================================= */
+
+@media (max-width: 1023px) {
+  .paw-wrapper {
+    width: 85px;
+    height: 85px;
+  }
+
+  .paw-svg {
+    width: 85px;
+    height: 85px;
+  }
+}
+
+@media (max-width: 640px) {
+  .paw-wrapper {
+    right: -10px;
+  }
+
+  .paw-svg {
+    width: 78px;
+    height: 78px;
+  }
 }
 </style>
