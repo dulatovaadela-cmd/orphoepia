@@ -6,21 +6,57 @@
       <div class="bg-white rounded-2xl shadow-2xl p-8">
 
         <h1 class="text-3xl font-extrabold text-purple-700 text-center mb-2">
-          📊 Результаты учеников
+          📊 Мой прогресс
         </h1>
 
         <p class="text-center text-gray-500 mb-8">
-          Результаты прохождения онлайн-тренажёра
+          История прохождения онлайн-тренажёра
         </p>
 
+        <!-- Информация об ученике -->
+        <div
+          v-if="studentName"
+          class="bg-purple-50 rounded-xl p-5 mb-8 text-center"
+        >
+          <p class="text-lg font-semibold text-gray-800">
+            {{ studentName }}
+          </p>
+
+          <p class="text-gray-500">
+            Класс: {{ studentClass }}
+          </p>
+        </div>
+
+        <!-- Общий прогресс -->
+        <div
+          v-if="results.length > 0"
+          class="bg-blue-50 rounded-xl p-6 mb-8 text-center"
+        >
+          <p class="text-gray-600 mb-1">
+            Общий процент выполнения
+          </p>
+
+          <p
+            class="text-4xl font-extrabold"
+            :class="getPercentColor(overallPercentage)"
+          >
+            {{ overallPercentage }}%
+          </p>
+
+          <p class="text-gray-500 mt-2">
+            Попыток пройдено: {{ results.length }}
+          </p>
+        </div>
+
         <div v-if="loading" class="text-center text-blue-600 text-lg py-10">
-          Загружаем результаты...
+          Загружаем ваш прогресс...
         </div>
 
         <div v-else-if="errorMessage" class="text-center py-10">
           <p class="text-red-600 font-semibold text-lg">
             {{ errorMessage }}
           </p>
+
           <button
             @click="loadResults"
             class="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-xl"
@@ -29,8 +65,20 @@
           </button>
         </div>
 
-        <div v-else-if="results.length === 0" class="text-center text-gray-500 py-10">
-          Пока нет результатов.
+        <div
+          v-else-if="results.length === 0"
+          class="text-center text-gray-500 py-10"
+        >
+          <p class="text-lg mb-3">
+            Пока нет пройденных заданий.
+          </p>
+
+          <NuxtLink
+            to="/stress"
+            class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-xl"
+          >
+            🚀 Начать тренировку
+          </NuxtLink>
         </div>
 
         <div v-else class="overflow-x-auto">
@@ -39,19 +87,12 @@
 
             <thead>
               <tr class="bg-purple-100">
+
                 <th class="border border-purple-200 px-4 py-3 text-left">
                   №
                 </th>
 
                 <th class="border border-purple-200 px-4 py-3 text-left">
-                  Имя и фамилия
-                </th>
-
-                <th class="border border-purple-200 px-4 py-3 text-left">
-                  Класс
-                </th>
-
-                <th class="border border-purple-200 px-4 py-3 text-center">
                   Задание
                 </th>
 
@@ -68,8 +109,9 @@
                 </th>
 
                 <th class="border border-purple-200 px-4 py-3 text-center">
-                  Дата
+                  Дата и время
                 </th>
+
               </tr>
             </thead>
 
@@ -86,15 +128,7 @@
                 </td>
 
                 <td class="border border-gray-200 px-4 py-3 font-semibold">
-                  {{ result.student_name }}
-                </td>
-
-                <td class="border border-gray-200 px-4 py-3">
-                  {{ result.class }}
-                </td>
-
-                <td class="border border-gray-200 px-4 py-3 text-center">
-                  Ударение
+                  {{ result.task_name || 'Ударение' }}
                 </td>
 
                 <td class="border border-gray-200 px-4 py-3 text-center font-semibold">
@@ -155,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const supabase = useSupabaseClient()
 
@@ -163,9 +197,52 @@ const results = ref<any[]>([])
 const loading = ref(true)
 const errorMessage = ref('')
 
+const studentName = ref('')
+const studentClass = ref('')
+
+const overallPercentage = computed(() => {
+  if (results.value.length === 0) return 0
+
+  const completedResults = results.value.filter(
+    result => result.percentage !== null && result.percentage !== undefined
+  )
+
+  if (completedResults.length === 0) return 0
+
+  const total = completedResults.reduce(
+    (sum, result) => sum + Number(result.percentage),
+    0
+  )
+
+  return Math.round(total / completedResults.length)
+})
+
+function getStudentInfo() {
+  if (process.client) {
+    const savedStudent = localStorage.getItem('orphoepia_student')
+
+    if (savedStudent) {
+      try {
+        const student = JSON.parse(savedStudent)
+
+        studentName.value = student.name || ''
+        studentClass.value = student.class || ''
+      } catch (error) {
+        console.error('Ошибка чтения данных ученика:', error)
+      }
+    }
+  }
+}
+
 async function loadResults() {
   loading.value = true
   errorMessage.value = ''
+
+  if (!studentName.value || !studentClass.value) {
+    results.value = []
+    loading.value = false
+    return
+  }
 
   const { data, error } = await supabase
     .from('attempts')
@@ -173,17 +250,20 @@ async function loadResults() {
       id,
       student_name,
       class,
+      task_name,
       total_questions,
       score,
       percentage,
       started_at,
       completed_at
     `)
+    .eq('student_name', studentName.value)
+    .eq('class', studentClass.value)
     .order('started_at', { ascending: false })
 
   if (error) {
-    console.error('Ошибка загрузки результатов:', error)
-    errorMessage.value = 'Не удалось загрузить результаты.'
+    console.error('Ошибка загрузки прогресса:', error)
+    errorMessage.value = 'Не удалось загрузить ваш прогресс.'
     loading.value = false
     return
   }
@@ -231,7 +311,8 @@ function formatDate(date: string | null) {
   })
 }
 
-onMounted(() => {
-  loadResults()
+onMounted(async () => {
+  getStudentInfo()
+  await loadResults()
 })
 </script>
