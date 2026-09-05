@@ -1,8 +1,10 @@
+```vue
 <template>
-  <div class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 py-8">
+  <div class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 py-8 px-4">
 
     <!-- Окошко с номерами вопросов -->
     <div
+      v-if="!finished"
       class="absolute top-4 right-4 bg-white shadow-xl rounded-xl p-4 w-72 grid grid-cols-5 gap-3 border border-purple-300"
     >
       <button
@@ -23,8 +25,11 @@
     </div>
 
     <!-- ОСНОВНОЙ БЛОК -->
-    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-purple-400">
+    <div
+      class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 border-t-4 border-purple-400"
+    >
 
+      <!-- ЗАГОЛОВОК -->
       <h2 class="text-3xl font-bold text-center mb-2 text-purple-700">
         Тест: Ударение
       </h2>
@@ -65,7 +70,11 @@
           </button>
         </div>
 
-        <div v-if="showResult" class="text-center flex justify-between gap-4 mt-3">
+        <!-- НАВИГАЦИЯ -->
+        <div
+          v-if="showResult"
+          class="text-center flex justify-between gap-4 mt-3"
+        >
 
           <button
             @click="prevQuestion"
@@ -85,16 +94,17 @@
 
         </div>
 
+        <!-- РЕЗУЛЬТАТ ОТВЕТА -->
         <div
           v-if="showResult && selectedIdx === currentQuestion.correct"
-          class="text-green-600 font-semibold mt-2"
+          class="text-green-600 font-semibold mt-3 text-center"
         >
           ✅ Верно!
         </div>
 
         <div
           v-if="showResult && selectedIdx !== currentQuestion.correct"
-          class="text-red-600 font-semibold mt-2"
+          class="text-red-600 font-semibold mt-3 text-center"
         >
           ❌ Неверно. Правильный ответ:
           <b>{{ currentQuestion.options[currentQuestion.correct] }}</b>
@@ -102,52 +112,77 @@
 
       </div>
 
-      <!-- РЕЗУЛЬТАТ -->
+      <!-- ФИНАЛЬНЫЙ РЕЗУЛЬТАТ -->
       <div v-else class="text-center mt-6">
 
-        <div class="bg-white rounded-xl shadow-lg p-6 inline-block">
+        <div class="bg-purple-50 rounded-2xl shadow-lg p-8">
 
-          <p class="text-2xl font-bold text-purple-700 mb-2">
-            Тест завершён!
+          <p class="text-3xl font-extrabold text-purple-700 mb-3">
+            🎉 Ваши результаты
           </p>
 
-          <p class="text-lg mb-2">
-            Ваш результат:
+          <p class="text-lg text-gray-600 mb-6">
+            Вы выполнили задание «Ударение»
           </p>
 
-          <p class="text-3xl font-extrabold text-green-600 mb-2">
-            {{ correctCount }}/{{ questions.length }} ({{ percent }}%)
-          </p>
+          <div class="bg-white rounded-xl p-6 shadow-md mb-5">
 
-          <p class="text-xl font-semibold mb-4">
-            Оценка:
-            <span :class="gradeColor">{{ grade }}</span>
-          </p>
+            <p class="text-gray-600 mb-2">
+              Результат
+            </p>
 
-          <p v-if="saveStatus === 'saving'" class="text-blue-600">
+            <p class="text-4xl font-extrabold text-green-600 mb-3">
+              {{ correctCount }}/{{ questions.length }}
+            </p>
+
+            <p class="text-2xl font-bold mb-3">
+              {{ percent }}%
+            </p>
+
+            <p class="text-xl font-semibold">
+              Оценка:
+              <span :class="gradeColor">
+                {{ grade }}
+              </span>
+            </p>
+
+          </div>
+
+          <!-- СОХРАНЕНИЕ -->
+          <p
+            v-if="saveStatus === 'saving'"
+            class="text-blue-600 mb-4"
+          >
             Сохраняем результат...
           </p>
 
-          <p v-if="saveStatus === 'saved'" class="text-green-600 font-semibold">
+          <p
+            v-if="saveStatus === 'saved'"
+            class="text-green-600 font-semibold mb-4"
+          >
             ✅ Результат сохранён
           </p>
 
-          <p v-if="saveStatus === 'error'" class="text-red-600 font-semibold">
+          <p
+            v-if="saveStatus === 'error'"
+            class="text-red-600 font-semibold mb-4"
+          >
             ❌ Не удалось сохранить результат
           </p>
 
-          <div class="flex flex-col gap-3 mt-4">
+          <!-- КНОПКИ -->
+          <div class="flex flex-col gap-3 mt-5">
 
             <NuxtLink
               to="/results"
-              class="block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-5 rounded-xl"
+              class="block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-5 rounded-xl shadow-md"
             >
               📊 Мой прогресс
             </NuxtLink>
 
             <NuxtLink
               to="/"
-              class="block text-blue-600 underline hover:text-blue-800"
+              class="block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-5 rounded-xl"
             >
               ⬅️ На главную
             </NuxtLink>
@@ -347,3 +382,4 @@ button:hover:not(:disabled) {
   transform: scale(1.02);
 }
 </style>
+```
